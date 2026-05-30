@@ -1,0 +1,19 @@
+{
+  "plugins": ["prettier-plugin-organize-imports"],
+  "arrowParens": "always",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "endOfLine": "lf",
+  "experimentalOperatorPosition": "end",
+  "htmlWhitespaceSensitivity": "css",
+  "jsxSingleQuote": true,
+  "objectWrap": "preserve",
+  "printWidth": 80,
+  "quoteProps": "as-needed",
+  "semi": true,
+  "singleAttributePerLine": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "useTabs": false
+}

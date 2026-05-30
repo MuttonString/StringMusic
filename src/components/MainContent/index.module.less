@@ -1,0 +1,69 @@
+.mainContent {
+  color: var(--mui-palette-text-primary, rgba(0, 0, 0, 0.87));
+  background-color: var(--bg-color, #fff);
+  width: calc(100% - calc(var(--side-bar-width, 250px) + 1px));
+  padding: 8px 8px calc(var(--op-bar-height, 96px) + 8px) 8px;
+  border-inline-start: 1px solid var(--mui-palette-divider, rgba(0, 0, 0, 0.12));
+  border-top: 1px solid var(--mui-palette-divider, rgba(0, 0, 0, 0.12));
+  border-start-start-radius: 8px;
+  overflow: hidden;
+
+  .pageExitForward {
+    opacity: 1;
+    transform: translateX(0);
+    transition: 100ms ease-in;
+  }
+  .pageExitActiveForward {
+    opacity: 0;
+    transform: translateX(100px);
+    transition: 100ms ease-in;
+  }
+  .pageEnterForward {
+    opacity: 0;
+    transform: translateX(-100px);
+    transition: 100ms ease-out;
+  }
+  .pageEnterActiveForward {
+    opacity: 1;
+    transform: translateX(0);
+    transition: 100ms ease-out;
+  }
+
+  .pageExitBack {
+    opacity: 1;
+    transform: translate(0);
+    transition: 100ms ease-in;
+  }
+  .pageExitActiveBack {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  .pageEnterBack {
+    opacity: 0;
+    transform: translateX(100px);
+    transition: 100ms ease-out;
+  }
+  .pageEnterActiveBack {
+    opacity: 1;
+    transform: translate(0);
+  }
+
+  .pageExitNew {
+    opacity: 1;
+    transform: scale(100%);
+  }
+  .pageExitActiveNew {
+    opacity: 0;
+    transform: scale(95%);
+    transition: all 100ms ease-in;
+  }
+  .pageEnterNew {
+    opacity: 0;
+    transform: scale(95%);
+  }
+  .pageEnterActiveNew {
+    opacity: 1;
+    transform: scale(100%);
+    transition: all 100ms ease-out;
+  }
+}

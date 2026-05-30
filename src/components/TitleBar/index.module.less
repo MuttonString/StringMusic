@@ -1,0 +1,55 @@
+.titleBar {
+  width: 100%;
+  height: var(--title-bar-height, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--mui-palette-text-primary, rgba(0, 0, 0, 0.87));
+
+  .leftPart {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: var(--side-bar-width, 250px);
+    max-width: var(--side-bar-width, 250px);
+    padding-inline-start: 12px;
+    pointer-events: none;
+    z-index: 10000;
+    font-size: 14px;
+
+    svg {
+      width: 1.5em;
+      height: 1.5em;
+    }
+  }
+
+  .midPart {
+    width: 100%;
+    height: var(--title-bar-height, 40px);
+    display: flex;
+    align-items: center;
+
+    .search {
+      margin-inline-start: 36px;
+      z-index: 101;
+    }
+
+    .btn {
+      z-index: 101;
+    }
+  }
+
+  .rightPart {
+    display: flex;
+    font-size: var(--title-bar-font-size, 10px);
+    z-index: 101;
+
+    .miniWindowBtn {
+      color: inherit;
+
+      svg {
+        font-size: 1.5em;
+      }
+    }
+  }
+}

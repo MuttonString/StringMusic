@@ -1,0 +1,89 @@
+body {
+  user-select: none;
+  cursor: default;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: var(--mui-palette-AppBar-defaultBg, #f5f5f5);
+  transition: background-color 225ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --bg-color: var(--mui-palette-background-default, #fff);
+  --title-bar-btn-width: 48px;
+  --title-bar-height: 40px;
+  --title-bar-font-size: 10px;
+  --side-bar-width: 250px;
+  --op-bar-height: 96px;
+}
+
+.no-animation {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.sharp {
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+  }
+}
+
+.transparent-bg {
+  background-color: transparent;
+  --bg-color: color-mix(
+    in oklch,
+    var(--mui-palette-background-default, #fff),
+    transparent 50%
+  );
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#client-area {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  user-select: text;
+}
+
+div[data-tauri-decorum-tb] {
+  height: var(--title-bar-height, 48px) !important;
+  transition: background 225ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  button.decorum-tb-btn {
+    z-index: 10000;
+  }
+}
+
+button.decorum-tb-btn {
+  color: var(--mui-palette-text-primary, rgba(0, 0, 0, 0.87));
+  width: var(--title-bar-btn-width, 48px) !important;
+  min-width: var(--title-bar-btn-width, 48px) !important;
+  height: var(--title-bar-height, 40px) !important;
+  font-size: var(--title-bar-font-size, 10px) !important;
+
+  &:focus-visible {
+    outline: 2px solid var(--mui-palette-Chip-defaultBorder, #bdbdbd);
+  }
+}
+
+:has(.MuiBackdrop-root) div[data-tauri-decorum-tb] {
+  z-index: 9999 !important;
+}
+
+body:has(.MuiBackdrop-root[style*='opacity: 1']) div[data-tauri-decorum-tb] {
+  background: var(--mui-palette-AppBar-defaultBg, #f5f5f5) !important;
+}
