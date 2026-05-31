@@ -14,9 +14,10 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { platform } from '@tauri-apps/plugin-os';
 import type { MouseEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppIcon from '../../assets/icon.svg?react';
 import useDetailHistory from '../../hooks/useDetailHistory';
@@ -31,14 +32,13 @@ interface IProps {
   onToggleMiniWindow: () => void;
 }
 
+const hasTrafficLights = platform() === 'macos';
+const hasRightThreeButtons = !['ios', 'android', 'macos'].includes(platform());
+
 export default function TitleBar(props: IProps) {
   const [settings] = useSettings();
   const { t } = useTranslation();
   const { onToggleMiniWindow } = props;
-  const hasTrafficLights = platform() === 'macos';
-  const hasRightThreeButtons = !['ios', 'android', 'macos'].includes(
-    platform(),
-  );
   const sharp = settings?.personalization.disableRoundCorner;
 
   const [prevAnchor, setPrevAnchor] = useState<null | HTMLElement>(null);
@@ -60,13 +60,38 @@ export default function TitleBar(props: IProps) {
     () => goForward(),
   );
 
+  const [hasLeftMargin, setHasLeftMargin] = useState(hasTrafficLights);
+  useEffect(() => {
+    if (!hasTrafficLights) return;
+
+    const appWindow = getCurrentWebviewWindow();
+    const fullscreenHandler = async () => {
+      try {
+        setHasLeftMargin(!(await appWindow.isFullscreen()));
+      } catch (err) {
+        console.error('Failed to get window fullscreen state: ' + err);
+        setHasLeftMargin(true);
+      }
+    };
+    fullscreenHandler();
+
+    let unlisten;
+    appWindow
+      .onResized(fullscreenHandler)
+      .then((fn) => (unlisten = fn))
+      .catch((err) => {
+        console.error('Can not listen window resize event: ' + err);
+      });
+
+    return unlisten;
+  }, []);
+
   return (
     <header className={styles.titleBar}>
-      <div
-        className={styles.leftPart}
-        style={{ visibility: hasTrafficLights ? 'hidden' : undefined }}
-      >
-        <AppIcon />
+      <div className={styles.leftPart}>
+        <AppIcon
+          style={hasLeftMargin ? { marginInlineStart: '64px' } : undefined}
+        />
         <span>{t('titleBar.stringMusic')}</span>
       </div>
 

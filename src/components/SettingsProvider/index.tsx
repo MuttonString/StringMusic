@@ -3,7 +3,8 @@ import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import type { PhysicalPosition, PhysicalSize } from '@tauri-apps/api/window';
 import { LogicalPosition, LogicalSize } from '@tauri-apps/api/window';
 import { message } from '@tauri-apps/plugin-dialog';
-import { relaunch } from '@tauri-apps/plugin-process';
+import { arch, locale, platform, version } from '@tauri-apps/plugin-os';
+import { exit, relaunch } from '@tauri-apps/plugin-process';
 import type { Store } from '@tauri-apps/plugin-store';
 import { load } from '@tauri-apps/plugin-store';
 import type { ReactNode } from 'react';
@@ -43,6 +44,7 @@ export default function SettingsProvider({ children }: IProps) {
   const [settings, setSettings] = useState<ISettings>();
   const [count, setCount] = useState(5);
   const [msgOpen, setMsgOpen] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
   const [errMsg, setErrMsg] = useState('');
   const timerRef = useRef<number>(null);
   const sizeRef = useRef<PhysicalSize>(null);
@@ -341,6 +343,41 @@ export default function SettingsProvider({ children }: IProps) {
       sizeRef.current = size.toPhysical(scale || 1);
       posRef.current = pos.toPhysical(scale || 1);
 
+      if (
+        !CSS.supports(
+          `(${['gap: 0', 'overflow: visible', 'background: linear-gradient(#000)', 'mix-blend-mode: difference', 'width: fit-content', 'selector(:focus-visible)'].join(') and (')})`,
+        )
+      ) {
+        console.warn('WebView version too low.')
+        setWarningOpen(true);
+      }
+
+      try {
+        try {
+          console.info(`OS info: ${platform()} ${version()} (${arch()})`);
+          console.info('WebView version: ' + (await invoke('webview_ver')));
+          console.info('Locale: ' + (await locale()));
+        } catch (err) {
+          console.error('Getting system infomation failed: ' + err);
+        }
+        await appWindow.show();
+        if (windowState.maximized) {
+          appWindow.maximize();
+        }
+
+        const startTime = (window as any).startTimestamp;
+        if (startTime !== undefined) {
+          console.info(`Page loaded within ${Date.now() - startTime}ms.`);
+          delete (window as any).startTimestamp;
+        }
+      } catch (err) {
+        console.error('Launch failed: ' + err);
+        message(`Launch failed.\n${err}`, {
+          title: 'String Music',
+          kind: 'error',
+        }).finally(exit);
+      }
+
       setSettings(loadedSettings);
     };
     init();
@@ -474,6 +511,13 @@ export default function SettingsProvider({ children }: IProps) {
             {errMsg}
           </>
         }
+      />
+      <Message
+        open={warningOpen}
+        onClose={() => setWarningOpen(false)}
+        type='warning'
+        autoHideDuration={10000}
+        message={t('msg.webviewVersionWarning')}
       />
       <Message
         open={msgOpen}

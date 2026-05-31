@@ -39,8 +39,7 @@ pub fn run() {
             main_window.create_overlay_titlebar().unwrap();
             #[cfg(target_os = "macos")]
             {
-                main_window.set_traffic_lights_inset(12.0, 16.0).unwrap();
-                main_window.make_transparent().unwrap()
+                main_window.make_transparent().unwrap();
             }
             Ok(())
         })
