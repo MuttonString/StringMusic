@@ -27,13 +27,6 @@ interface IProps {
   children: ReactNode;
 }
 
-const DEFAULT_WINDOW_STATE = {
-  width: 800,
-  height: 600,
-  x: 300,
-  y: 200,
-} as const;
-
 export const SettingsContext = createContext<
   | readonly [ISettings | undefined, (key: string, value: any) => Promise<void>]
   | null
@@ -88,15 +81,8 @@ export default function SettingsProvider({ children }: IProps) {
       maximized = await appWindow.isMaximized();
       if (maximized) {
         const scale = await appWindow.scaleFactor();
-        size =
-          sizeRef.current!.toLogical(scale) ||
-          new LogicalSize(
-            DEFAULT_WINDOW_STATE.width,
-            DEFAULT_WINDOW_STATE.height,
-          );
-        pos =
-          posRef.current!.toLogical(scale) ||
-          new LogicalPosition(DEFAULT_WINDOW_STATE.x, DEFAULT_WINDOW_STATE.y);
+        size = sizeRef.current!.toLogical(scale);
+        pos = posRef.current!.toLogical(scale);
       } else {
         size = (await appWindow.innerSize()).toLogical(scale);
         pos = (await appWindow.outerPosition()).toLogical(scale);
@@ -338,8 +324,12 @@ export default function SettingsProvider({ children }: IProps) {
       const windowState = loadedSettings.windowState.main;
       const size = new LogicalSize(windowState.width, windowState.height);
       const pos = new LogicalPosition(windowState.x, windowState.y);
-      appWindow.setPosition(pos);
-      appWindow.setSize(size);
+      try {
+        await appWindow.setPosition(pos);
+        await appWindow.setSize(size);
+      } catch (err) {
+        console.error('Failed to set window state: ' + err);
+      }
       sizeRef.current = size.toPhysical(scale || 1);
       posRef.current = pos.toPhysical(scale || 1);
 
@@ -348,7 +338,7 @@ export default function SettingsProvider({ children }: IProps) {
           `(${['gap: 0', 'overflow: visible', 'background: linear-gradient(#000)', 'mix-blend-mode: difference', 'width: fit-content', 'selector(:focus-visible)'].join(') and (')})`,
         )
       ) {
-        console.warn('WebView version too low.')
+        console.warn('WebView version too low.');
         setWarningOpen(true);
       }
 
@@ -362,7 +352,8 @@ export default function SettingsProvider({ children }: IProps) {
         }
         await appWindow.show();
         if (windowState.maximized) {
-          appWindow.maximize();
+          // 避免最大化图标错误
+          setTimeout(appWindow.maximize, 1);
         }
 
         const startTime = (window as any).startTimestamp;
@@ -400,9 +391,15 @@ export default function SettingsProvider({ children }: IProps) {
       .onResized(async () => {
         if (!posRef.current) return; // 待读入设置后，其值不为null，再监听resize事件
 
-        if (!(await appWindow.isMaximized())) {
-          posRef.current = await appWindow.outerPosition();
-          sizeRef.current = await appWindow.innerSize();
+        try {
+          const pos = await appWindow.outerPosition();
+          const size = await appWindow.innerSize();
+          if (!(await appWindow.isMaximized())) {
+            posRef.current = pos;
+            sizeRef.current = size;
+          }
+        } catch (err) {
+          console.error('Failed to get window state: ' + err);
         }
       })
       .then((fn) => (unlistenResize = fn))

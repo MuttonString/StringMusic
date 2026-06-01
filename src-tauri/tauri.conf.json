@@ -35,6 +35,9 @@
     "targets": ["nsis", "dmg", "deb", "rpm"],
     "publisher": "Mutton String",
     "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      },
       "nsis": {
         "installMode": "both",
         "languages": [
