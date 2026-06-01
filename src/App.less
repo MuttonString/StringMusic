@@ -74,14 +74,26 @@ div[data-tauri-decorum-tb] {
   button.decorum-tb-btn {
     z-index: 10000;
   }
+
+  & #decorum-tb-close:hover {
+    background-color: color-mix(
+      in oklch,
+      var(--mui-palette-error-main, #d32f2f),
+      transparent calc(var(--mui-palette-action-hoverOpacity, 0.04) * 100%)
+    ) !important;
+  }
 }
 
 button.decorum-tb-btn {
   color: var(--mui-palette-text-primary, rgba(0, 0, 0, 0.87));
-  width: var(--title-bar-btn-width, 48px) !important;
-  min-width: var(--title-bar-btn-width, 48px) !important;
-  height: var(--title-bar-height, 40px) !important;
-  font-size: var(--title-bar-font-size, 10px) !important;
+  width: var(--title-bar-btn-width, 48px);
+  min-width: var(--title-bar-btn-width, 48px);
+  height: var(--title-bar-height, 40px);
+  font-size: var(--title-bar-font-size, 10px);
+
+  &:hover {
+    background-color: var(--mui-palette-action-hover, rgba(0, 0, 0, 0.04));
+  }
 
   &:focus-visible {
     outline: 2px solid var(--mui-palette-Chip-defaultBorder, #bdbdbd);
