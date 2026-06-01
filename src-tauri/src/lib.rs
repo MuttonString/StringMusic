@@ -35,11 +35,15 @@ pub fn run() {
             let app_handle = app.handle().clone();
             setup_accent_color_listener(app_handle);
 
-            let main_window = app.get_webview_window("main").unwrap();
-            main_window.create_overlay_titlebar().unwrap();
-            #[cfg(target_os = "macos")]
+            #[cfg(any(target_os = "macos", target_os = "windows"))]
             {
-                main_window.make_transparent().unwrap();
+                let main_window = app.get_webview_window("main").unwrap();
+                main_window.create_overlay_titlebar().unwrap();
+
+                #[cfg(target_os = "macos")]
+                {
+                    main_window.make_transparent().unwrap();
+                }
             }
             Ok(())
         })

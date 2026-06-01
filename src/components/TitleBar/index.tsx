@@ -33,7 +33,7 @@ interface IProps {
 }
 
 const hasTrafficLights = platform() === 'macos';
-const hasRightThreeButtons = !['ios', 'android', 'macos'].includes(platform());
+const hasRightThreeButtons = platform() === 'windows';
 
 export default function TitleBar(props: IProps) {
   const [settings] = useSettings();
@@ -87,15 +87,15 @@ export default function TitleBar(props: IProps) {
   }, []);
 
   return (
-    <header className={styles.titleBar}>
-      <div className={styles.leftPart}>
+    <header data-tauri-drag-region className={styles.titleBar}>
+      <div data-tauri-drag-region className={styles.leftPart}>
         <AppIcon
           style={hasLeftMargin ? { marginInlineStart: '64px' } : undefined}
         />
         <span>{t('titleBar.stringMusic')}</span>
       </div>
 
-      <div className={styles.midPart}>
+      <div data-tauri-drag-region className={styles.midPart}>
         <Tip
           disabled={prev.length === 0}
           title={
@@ -189,6 +189,7 @@ export default function TitleBar(props: IProps) {
       </div>
 
       <div
+        data-tauri-drag-region
         className={styles.rightPart}
         style={{
           marginInlineEnd: hasRightThreeButtons
@@ -197,7 +198,7 @@ export default function TitleBar(props: IProps) {
         }}
       >
         <Tip title={t('titleBar.accounts')}>
-          <button className='decorum-tb-btn'>
+          <button className='decorum-tb-btn' onDrag={() => false}>
             <Avatar
               src={
                 'https://i0.hdslb.com/bfs/face/84ed014dc45788a0f5ed1a672d2cb00f929e9f23.jpg'
