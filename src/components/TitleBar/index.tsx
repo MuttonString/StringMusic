@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import Input from '@mui/material/Input';
 import InputAdornment from '@mui/material/InputAdornment';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
-import { platform } from '@tauri-apps/plugin-os';
+import { type } from '@tauri-apps/plugin-os';
 import type { MouseEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +32,8 @@ interface IProps {
   onToggleMiniWindow: () => void;
 }
 
-const hasTrafficLights = platform() === 'macos';
-const hasRightThreeButtons = platform() === 'windows';
+const hasTrafficLights = type() === 'macos';
+const hasRightThreeButtons = type() === 'windows';
 
 export default function TitleBar(props: IProps) {
   const [settings] = useSettings();

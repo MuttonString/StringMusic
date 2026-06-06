@@ -53,24 +53,6 @@ export enum CheckFrequency {
 }
 
 export interface ISettings {
-  windowState: {
-    main: {
-      width: number;
-      height: number;
-      x: number;
-      y: number;
-      maximized: boolean;
-    };
-    mini: {
-      x: number;
-      y: number;
-    };
-    lyric: {
-      length: number;
-      x: number;
-      y: number;
-    };
-  };
   common: {
     /**
      * Windows/macOS/Linux only

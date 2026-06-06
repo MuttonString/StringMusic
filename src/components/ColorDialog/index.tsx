@@ -9,7 +9,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import chroma from 'chroma-js';
 import type { MouseEvent, TouchEvent } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SimpleBar from 'simplebar-react';
 import Tip from '../Tip';
@@ -23,6 +23,13 @@ interface IProps {
 }
 
 const PICKER_SIZE = 192;
+
+const limitRange = (value: string | number, max: number) => {
+  const num = Number(value);
+  if (num < 0) return 0;
+  if (num > max) return max;
+  return num;
+};
 
 export default function ColorDialog(props: IProps) {
   const { open, onClose, color, onColorChanged } = props;
@@ -46,46 +53,41 @@ export default function ColorDialog(props: IProps) {
   const dragSaturationRef = useRef(false);
   const dragHueRef = useRef(false);
 
-  const limitRange = (value: string | number, max: number) => {
-    const num = Number(value);
-    if (num < 0) return 0;
-    if (num > max) return max;
-    return num;
-  };
+  const handleSaturationDrag = useCallback(
+    (e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const client = (e as TouchEvent).touches?.[0] || (e as MouseEvent);
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x =
+        document.documentElement.dir === 'rtl'
+          ? PICKER_SIZE - limitRange(client.clientX - rect.left, PICKER_SIZE)
+          : limitRange(client.clientX - rect.left, PICKER_SIZE);
+      const y = limitRange(client.clientY - rect.top, PICKER_SIZE);
+      const newColor = chroma.hsv(
+        Number(hInput),
+        x / PICKER_SIZE,
+        1 - y / PICKER_SIZE,
+      );
+      setChromaColor(newColor);
+      setHexInput(newColor.hex().slice(1));
+    },
+    [hInput],
+  );
 
-  const handleSaturationDrag = (
-    e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>,
-  ) => {
-    e.preventDefault();
-    const client = (e as TouchEvent).touches?.[0] || (e as MouseEvent);
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x =
-      document.documentElement.dir === 'rtl'
-        ? PICKER_SIZE - limitRange(client.clientX - rect.left, PICKER_SIZE)
-        : limitRange(client.clientX - rect.left, PICKER_SIZE);
-    const y = limitRange(client.clientY - rect.top, PICKER_SIZE);
-    const newColor = chroma.hsv(
-      Number(hInput),
-      x / PICKER_SIZE,
-      1 - y / PICKER_SIZE,
-    );
-    setChromaColor(newColor);
-    setHexInput(newColor.hex().slice(1));
-  };
-
-  const handleHueDrag = (
-    e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>,
-  ) => {
-    e.preventDefault();
-    const client = (e as TouchEvent).touches?.[0] || (e as MouseEvent);
-    const rect = e.currentTarget.getBoundingClientRect();
-    const y = limitRange(client.clientY - rect.top, PICKER_SIZE);
-    const hue = (y * 360) / PICKER_SIZE;
-    const newColor = chromaColor.set('hsl.h', hue);
-    setChromaColor(newColor);
-    setHInput(String(Math.round(hue)));
-    setHexInput(newColor.hex().slice(1));
-  };
+  const handleHueDrag = useCallback(
+    (e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      const client = (e as TouchEvent).touches?.[0] || (e as MouseEvent);
+      const rect = e.currentTarget.getBoundingClientRect();
+      const y = limitRange(client.clientY - rect.top, PICKER_SIZE);
+      const hue = (y * 360) / PICKER_SIZE;
+      const newColor = chromaColor.set('hsl.h', hue);
+      setChromaColor(newColor);
+      setHInput(String(Math.round(hue)));
+      setHexInput(newColor.hex().slice(1));
+    },
+    [chromaColor],
+  );
 
   const handleSaturationDragStart = (
     e: MouseEvent<HTMLDivElement> | TouchEvent<HTMLDivElement>,
@@ -118,16 +120,18 @@ export default function ColorDialog(props: IProps) {
     if (v) setSInput(String(Math.round(chromaColor.get('hsv.s') * 100)));
   }, [chromaColor]);
 
-  const setToRecommend = (e: MouseEvent<HTMLButtonElement>) => {
+  const setToRecommend = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     const val = e.currentTarget.style.background;
     const recommend = chroma(val);
     setChromaColor(recommend);
     setHexInput(recommend.hex().slice(1));
-  };
+  }, []);
 
   return (
     <Dialog maxWidth='xs' fullWidth open={open}>
-      <DialogTitle>{t('colorDialog.title')}</DialogTitle>
+      <DialogTitle sx={{ padding: '8px 24px' }}>
+        {t('colorDialog.title')}
+      </DialogTitle>
       <DialogContent dividers sx={{ padding: 0 }}>
         <SimpleBar
           tabIndex={-1}

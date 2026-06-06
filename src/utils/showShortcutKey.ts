@@ -1,4 +1,4 @@
-import { platform } from '@tauri-apps/plugin-os';
+import { type } from '@tauri-apps/plugin-os';
 
 const KEY_ABBR: { [key: string]: string } = {
   Up: '↑',
@@ -37,7 +37,7 @@ const KEY_MAC: { [key: string]: string } = {
  * @returns 如“复制 (Ctrl+C)”格式的文本
  */
 export default function showShortcutKey(text: string, ...keys: string[]) {
-  const os = platform();
+  const os = type();
 
   return `${text}${text ? ' ' : ''}(${keys
     .map((key) => {

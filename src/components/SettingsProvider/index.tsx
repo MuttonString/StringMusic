@@ -1,10 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
-import type { PhysicalPosition, PhysicalSize } from '@tauri-apps/api/window';
-import { LogicalPosition, LogicalSize } from '@tauri-apps/api/window';
 import { message } from '@tauri-apps/plugin-dialog';
-import { arch, locale, platform, version } from '@tauri-apps/plugin-os';
-import { exit, relaunch } from '@tauri-apps/plugin-process';
+import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os';
+import { relaunch } from '@tauri-apps/plugin-process';
 import type { Store } from '@tauri-apps/plugin-store';
 import { load } from '@tauri-apps/plugin-store';
 import type { ReactNode } from 'react';
@@ -40,8 +38,6 @@ export default function SettingsProvider({ children }: IProps) {
   const [warningOpen, setWarningOpen] = useState(false);
   const [errMsg, setErrMsg] = useState('');
   const timerRef = useRef<number>(null);
-  const sizeRef = useRef<PhysicalSize>(null);
-  const posRef = useRef<PhysicalPosition>(null);
 
   const updateSettings = useCallback(async (key: string, value: any) => {
     console.info(`Change setting "${key}" to ${JSON.stringify(value)}`);
@@ -69,41 +65,33 @@ export default function SettingsProvider({ children }: IProps) {
     }
   }, []);
 
-  // Window state
-  const saveWindowState = useCallback(async () => {
-    const appWindow = getCurrentWebviewWindow();
-    let size: LogicalSize;
-    let pos: LogicalPosition;
-    let maximized: boolean;
-
-    try {
-      const scale = await appWindow.scaleFactor();
-      maximized = await appWindow.isMaximized();
-      if (maximized) {
-        const scale = await appWindow.scaleFactor();
-        size = sizeRef.current!.toLogical(scale);
-        pos = posRef.current!.toLogical(scale);
-      } else {
-        size = (await appWindow.innerSize()).toLogical(scale);
-        pos = (await appWindow.outerPosition()).toLogical(scale);
-      }
-    } catch (err) {
-      console.error('Failed to get window state: ' + err);
-      return;
-    }
-
-    await updateSettings('windowState.main', {
-      width: size.width,
-      height: size.height,
-      x: pos.x,
-      y: pos.y,
-      maximized,
-    });
-  }, [updateSettings]);
-
   // init
   useEffect(() => {
-    const appWindow = getCurrentWebviewWindow();
+    // 修复最大化窗口的还原按钮图标bug
+    if (type() === 'windows') {
+      const appWindow = getCurrentWebviewWindow();
+      const observer = new MutationObserver(() => {
+        const maxBtn = document.getElementById('decorum-tb-maximize');
+        if (maxBtn) {
+          observer.disconnect();
+          appWindow
+            .isMaximized()
+            .then((val) => {
+              if (val) {
+                maxBtn.innerHTML = '\ue923';
+              }
+            })
+            .catch((err) =>
+              console.error('Failed to get window state: ' + err),
+            );
+        }
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: false,
+      });
+    }
 
     const init = async () => {
       let store: Store;
@@ -170,37 +158,7 @@ export default function SettingsProvider({ children }: IProps) {
         config.personalization?.primaryColor?.hex,
       );
 
-      const mainX = config.windowState?.main?.x;
-      const mainY = config.windowState?.main?.y;
-
       const loadedSettings: ISettings = {
-        windowState: {
-          main: {
-            width:
-              Math.max(getProperNumber(config.windowState?.main?.width), 400) ||
-              800,
-            height:
-              Math.max(
-                getProperNumber(config.windowState?.main?.height),
-                400,
-              ) || 600,
-            x: typeof mainX === 'number' ? Math.max(mainX, -30) : 300,
-            y: typeof mainY === 'number' ? Math.max(mainY, -20) : 200,
-            maximized: getProperBool(
-              config.windowState?.main?.maximized,
-              false,
-            ),
-          },
-          mini: {
-            x: getProperNumber(config.windowState?.mini?.x),
-            y: getProperNumber(config.windowState?.mini?.y),
-          },
-          lyric: {
-            x: getProperNumber(config.windowState?.lyric?.x),
-            y: getProperNumber(config.windowState?.lyric?.y),
-            length: getProperNumber(config.windowState?.lyric?.length) || 200,
-          },
-        },
         common: {
           autorun: getProperBool(config.common?.autorun, false),
           closeWindow: getProperNumber(
@@ -313,26 +271,6 @@ export default function SettingsProvider({ children }: IProps) {
           break;
       }
 
-      // load window state
-      let scale: number;
-      try {
-        scale = await appWindow.scaleFactor();
-      } catch (err) {
-        scale = 1;
-        console.error('Failed to get scale factor: ' + err);
-      }
-      const windowState = loadedSettings.windowState.main;
-      const size = new LogicalSize(windowState.width, windowState.height);
-      const pos = new LogicalPosition(windowState.x, windowState.y);
-      try {
-        await appWindow.setPosition(pos);
-        await appWindow.setSize(size);
-      } catch (err) {
-        console.error('Failed to set window state: ' + err);
-      }
-      sizeRef.current = size.toPhysical(scale || 1);
-      posRef.current = pos.toPhysical(scale || 1);
-
       if (
         !CSS.supports(
           `(${['gap: 0', 'overflow: visible', 'background: linear-gradient(#000)', 'mix-blend-mode: difference', 'width: fit-content', 'selector(:focus-visible)'].join(') and (')})`,
@@ -343,88 +281,23 @@ export default function SettingsProvider({ children }: IProps) {
       }
 
       try {
-        try {
-          console.info(`OS info: ${platform()} ${version()} (${arch()})`);
-          console.info('WebView version: ' + (await invoke('webview_ver')));
-          console.info('Locale: ' + (await locale()));
-        } catch (err) {
-          console.error('Getting system infomation failed: ' + err);
-        }
-        await appWindow.show();
-        if (windowState.maximized) {
-          // 避免最大化图标错误
-          setTimeout(appWindow.maximize, 1);
-        }
-
-        const startTime = (window as any).startTimestamp;
-        if (startTime !== undefined) {
-          console.info(`Page loaded within ${Date.now() - startTime}ms.`);
-          delete (window as any).startTimestamp;
-        }
+        console.info(`OS info: ${platform()} ${version()} (${arch()})`);
+        console.info('WebView version: ' + (await invoke('webview_ver')));
+        console.info('Locale: ' + (await locale()));
       } catch (err) {
-        console.error('Launch failed: ' + err);
-        message(`Launch failed.\n${err}`, {
-          title: 'String Music',
-          kind: 'error',
-        }).finally(exit);
+        console.error('Getting system infomation failed: ' + err);
+      }
+
+      const startTime = (window as any).startTimestamp;
+      if (startTime !== undefined) {
+        console.info(`Page loaded within ${Date.now() - startTime}ms.`);
+        delete (window as any).startTimestamp;
       }
 
       setSettings(loadedSettings);
     };
     init();
-
-    let unlistenClosing: undefined | (() => void);
-    appWindow
-      .onCloseRequested(() =>
-        saveWindowState().finally(() => {
-          console.info('Main window closed.');
-          appWindow.destroy();
-        }),
-      )
-      .then((fn) => (unlistenClosing = fn))
-      .catch((err) => {
-        console.error('Can not listen window close requested event: ' + err);
-      });
-
-    let unlistenResize: undefined | (() => void);
-    appWindow
-      .onResized(async () => {
-        if (!posRef.current) return; // 待读入设置后，其值不为null，再监听resize事件
-
-        try {
-          const pos = await appWindow.outerPosition();
-          const size = await appWindow.innerSize();
-          if (!(await appWindow.isMaximized())) {
-            posRef.current = pos;
-            sizeRef.current = size;
-          }
-        } catch (err) {
-          console.error('Failed to get window state: ' + err);
-        }
-      })
-      .then((fn) => (unlistenResize = fn))
-      .catch((err) => {
-        console.error('Can not listen window resize event: ' + err);
-      });
-
-    let unlistenMoved: undefined | (() => void);
-    appWindow
-      .onMoved(async () => {
-        if (!(await appWindow.isMaximized())) {
-          posRef.current = await appWindow.outerPosition();
-        }
-      })
-      .then((fn) => (unlistenMoved = fn))
-      .catch((err) => {
-        console.error('Can not listen window moved event: ' + err);
-      });
-
-    return () => {
-      unlistenClosing?.();
-      unlistenResize?.();
-      unlistenMoved?.();
-    };
-  }, [saveWindowState]);
+  }, []);
 
   // Developer options
   const isDevOptEnabled = settings?.developerOptions.enabled;
@@ -476,12 +349,6 @@ export default function SettingsProvider({ children }: IProps) {
               relaunch();
               break;
             }
-
-            saveWindowState().finally(() => {
-              getCurrentWebviewWindow()
-                .hide()
-                .finally(() => setTimeout(() => window.location.reload(), 300));
-            });
           }
           break;
       }
@@ -492,7 +359,7 @@ export default function SettingsProvider({ children }: IProps) {
     return () => {
       window.removeEventListener('keydown', handleDevKey);
     };
-  }, [isDevOptEnabled, saveWindowState, t, updateSettings]);
+  }, [isDevOptEnabled, t, updateSettings]);
 
   return (
     <SettingsContext.Provider value={[settings, updateSettings] as const}>
