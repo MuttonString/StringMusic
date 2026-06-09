@@ -34,6 +34,7 @@ forwardConsole('debug', debug);
 forwardConsole('info', info);
 forwardConsole('warn', warn);
 forwardConsole('error', error);
+console.info('Creating React DOM...');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

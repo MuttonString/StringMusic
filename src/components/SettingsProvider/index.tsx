@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { message } from '@tauri-apps/plugin-dialog';
-import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os';
+import { type } from '@tauri-apps/plugin-os';
 import { relaunch } from '@tauri-apps/plugin-process';
 import type { Store } from '@tauri-apps/plugin-store';
 import { load } from '@tauri-apps/plugin-store';
@@ -278,14 +278,6 @@ export default function SettingsProvider({ children }: IProps) {
       ) {
         console.warn('WebView version too low.');
         setWarningOpen(true);
-      }
-
-      try {
-        console.info(`OS info: ${platform()} ${version()} (${arch()})`);
-        console.info('WebView version: ' + (await invoke('webview_ver')));
-        console.info('Locale: ' + (await locale()));
-      } catch (err) {
-        console.error('Getting system infomation failed: ' + err);
       }
 
       const startTime = (window as any).startTimestamp;

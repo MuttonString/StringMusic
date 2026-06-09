@@ -13,7 +13,7 @@ const KEY_ABBR: { [key: string]: string } = {
   Pagedown: 'PgDn',
   Pgdn: 'PgDn',
   Backspace: 'BackSpace',
-};
+} as const;
 
 const KEY_MAC: { [key: string]: string } = {
   Ctrl: '⌃',
@@ -28,7 +28,7 @@ const KEY_MAC: { [key: string]: string } = {
   '↓': '▼',
   '←': '◀',
   '→': '▶',
-};
+} as const;
 
 /**
  * 展示包含空格和括号的快捷键描述，多个键之间自动拼接加号，修饰键的描述因系统而异
