@@ -43,7 +43,7 @@ export default function MainContent() {
         <CSSTransition
           nodeRef={nodeRef}
           key={location.key}
-          timeout={225}
+          timeout={125}
           classNames={getAnimation(animation)}
         >
           <div ref={nodeRef}>{outlet}</div>

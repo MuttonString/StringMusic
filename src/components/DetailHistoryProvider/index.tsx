@@ -1,6 +1,7 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import HomeSharpIcon from '@mui/icons-material/HomeSharp';
 import SentimentVeryDissatisfiedRoundedIcon from '@mui/icons-material/SentimentVeryDissatisfiedRounded';
+import SentimentVeryDissatisfiedSharpIcon from '@mui/icons-material/SentimentVeryDissatisfiedSharp';
 import SettingsSharpIcon from '@mui/icons-material/SettingsBrightnessSharp';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import type { ReactNode } from 'react';
@@ -41,18 +42,20 @@ export default function DetailHistoryProvider({ children }: IProps) {
   const [prev, setPrev] = useState<BrowsingItem[]>([]);
   const [next, setNext] = useState<BrowsingItem[]>([]);
   const [current, setCurrent] = useState<BrowsingItem>({
-    icon: iconMap[location.pathname][
-      Number(settings?.personalization.colorMode)
-    ] || <SentimentVeryDissatisfiedRoundedIcon fontSize='small' />,
+    icon: (iconMap[location.pathname] || [
+      <SentimentVeryDissatisfiedRoundedIcon key={0} fontSize='small' />,
+      <SentimentVeryDissatisfiedSharpIcon key={1} fontSize='small' />,
+    ])[Number(settings?.personalization.disableRoundCorner)],
     title: t(titleMap[location.pathname]) || location.pathname,
   });
   const [animation, setAnimation] = useState<PageAnimation>();
 
   useEffect(() => {
     const curr = {
-      icon: iconMap[location.pathname][
-        Number(settings?.personalization.colorMode)
-      ] || <SentimentVeryDissatisfiedRoundedIcon fontSize='small' />,
+      icon: (iconMap[location.pathname] || [
+        <SentimentVeryDissatisfiedRoundedIcon key={0} fontSize='small' />,
+        <SentimentVeryDissatisfiedSharpIcon key={1} fontSize='small' />,
+      ])[Number(settings?.personalization.disableRoundCorner)],
       title: t(titleMap[location.pathname]) || location.pathname,
     };
     setCurrent(curr);

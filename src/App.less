@@ -100,10 +100,10 @@ button.decorum-tb-btn {
   }
 }
 
-:has(.MuiBackdrop-root) div[data-tauri-decorum-tb] {
+body:has(.MuiDialog-backdrop) div[data-tauri-decorum-tb] {
   z-index: 9999 !important;
 }
 
-body:has(.MuiBackdrop-root[style*='opacity: 1']) div[data-tauri-decorum-tb] {
+body:has(.MuiDialog-backdrop[style*='opacity: 1']) div[data-tauri-decorum-tb] {
   background: var(--mui-palette-AppBar-defaultBg, #f5f5f5) !important;
 }
