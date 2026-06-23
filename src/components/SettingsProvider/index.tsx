@@ -10,13 +10,7 @@ import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type DeepPartial from '../../types/deepPartial';
 import type { ISettings } from '../../types/settings';
-import {
-  BackgroundType,
-  BlurEffect,
-  CheckFrequency,
-  CloseWindowAction,
-  ColorMode,
-} from '../../types/settings';
+import { BackgroundType } from '../../types/settings';
 import { DEFAULT_COLOR, getPrimaryColor } from '../../utils/color';
 import { changeTitle, setBlurEffect } from '../../utils/windowOperation';
 import Message from '../Message';
@@ -111,22 +105,22 @@ export default function SettingsProvider({ children }: IProps) {
         });
       }
 
+      // 对于异常数字，使用默认值
       const getProperNumber = (
         value: unknown,
-        enumType?: { [key: string | number]: number | string },
+        max: number,
+        defaultValue = 0,
       ) => {
         if (typeof value === 'number') {
-          if (enumType) {
-            if (Object.values(enumType).includes(value)) {
-              return value;
-            }
-            return 0;
+          if (value > max || value < 0) {
+            return defaultValue;
           }
           return value;
         }
-        return 0;
+        return defaultValue;
       };
 
+      // 对于异常布尔值，使用默认值
       const getProperBool = (value: unknown, defaultValue: boolean) => {
         if (typeof value === 'boolean') {
           return value;
@@ -134,16 +128,10 @@ export default function SettingsProvider({ children }: IProps) {
         return defaultValue;
       };
 
-      const getProperOpacity = (value: unknown) => {
-        if (typeof value === 'number' && value >= 0 && value <= 100) {
-          return value;
-        }
-        return 80;
-      };
-
       const autoPrimaryColor =
         config.personalization?.primaryColor?.auto ?? false;
 
+      // 对于异常颜色值，使用默认颜色
       const getProperPrimaryColor = async (value: unknown) => {
         if (autoPrimaryColor) {
           return await getPrimaryColor();
@@ -158,13 +146,12 @@ export default function SettingsProvider({ children }: IProps) {
         config.personalization?.primaryColor?.hex,
       );
 
+      // 读取设置，对于不存在的设置项，填充默认值
+      // 注意：枚举值元素数量发生变动时，必须修改getProperNumber的max参数
       const loadedSettings: ISettings = {
         common: {
           autorun: getProperBool(config.common?.autorun, false),
-          closeWindow: getProperNumber(
-            config.common?.closeWindow,
-            CloseWindowAction,
-          ),
+          closeWindow: getProperNumber(config.common?.closeWindow, 2),
         },
         internationalization: {
           language: config.internationalization?.language || '',
@@ -181,25 +168,21 @@ export default function SettingsProvider({ children }: IProps) {
           longitudinal: getProperBool(config.desktopLyric?.longitudinal, false),
         },
         personalization: {
-          colorMode: getProperNumber(
-            config.personalization?.colorMode,
-            ColorMode,
-          ),
+          colorMode: getProperNumber(config.personalization?.colorMode, 2),
           primaryColor: {
             auto: autoPrimaryColor,
             hex: primaryColor,
           },
           background: {
-            type: getProperNumber(
-              config.personalization?.background?.type,
-              BackgroundType,
-            ),
-            opacity: getProperOpacity(
+            type: getProperNumber(config.personalization?.background?.type, 4),
+            opacity: getProperNumber(
               config.personalization?.background?.opacity,
+              100,
+              80,
             ),
             blurEffect: getProperNumber(
               config.personalization?.background?.blurEffect,
-              BlurEffect,
+              3,
             ),
             picturePath: config.personalization?.background?.picturePath || '',
             folderPath: config.personalization?.background?.folderPath || '',
@@ -207,14 +190,16 @@ export default function SettingsProvider({ children }: IProps) {
           backgroundMini: {
             type: getProperNumber(
               config.personalization?.backgroundMini?.type,
-              BackgroundType,
+              4,
             ),
-            opacity: getProperOpacity(
+            opacity: getProperNumber(
               config.personalization?.backgroundMini?.opacity,
+              100,
+              80,
             ),
             blurEffect: getProperNumber(
               config.personalization?.backgroundMini?.blurEffect,
-              BlurEffect,
+              3,
             ),
             picturePath:
               config.personalization?.backgroundMini?.picturePath || '',
@@ -242,10 +227,7 @@ export default function SettingsProvider({ children }: IProps) {
           ),
         },
         about: {
-          checkUpdate: getProperNumber(
-            config.about?.checkUpdate,
-            CheckFrequency,
-          ),
+          checkUpdate: getProperNumber(config.about?.checkUpdate, 3),
         },
         developerOptions: {
           enabled: getProperBool(config.developerOptions?.enabled, false),
@@ -258,6 +240,7 @@ export default function SettingsProvider({ children }: IProps) {
         },
       };
 
+      // 应用设置
       const personalization = loadedSettings.personalization;
       if (personalization.disableAnimation) {
         document.documentElement.classList.add('no-animation');
@@ -280,10 +263,10 @@ export default function SettingsProvider({ children }: IProps) {
         setWarningOpen(true);
       }
 
-      const startTime = (window as any).startTimestamp;
+      const startTime = window.startTimestamp;
       if (startTime !== undefined) {
         console.info(`Page loaded within ${Date.now() - startTime}ms.`);
-        delete (window as any).startTimestamp;
+        delete window.startTimestamp;
       }
 
       setSettings(loadedSettings);

@@ -23,7 +23,11 @@ import AppIcon from '../../assets/icon.svg?react';
 import useDetailHistory from '../../hooks/useDetailHistory';
 import useLongClick from '../../hooks/useLongClick';
 import useSettings from '../../hooks/useSettings';
-import showShortcutKey from '../../utils/showShortcutKey';
+import {
+  KeyCode,
+  PRIMARY_MODIFIER_KEY,
+  showShortcutKey,
+} from '../../utils/shortcutKey';
 import BrowsingHistory from '../BrowsingHistory';
 import Tip from '../Tip';
 import styles from './index.module.less';
@@ -99,7 +103,7 @@ export default function TitleBar(props: IProps) {
         <Tip
           disabled={prev.length === 0}
           title={
-            showShortcutKey(t('titleBar.back'), 'alt', 'left') +
+            showShortcutKey(t('titleBar.back'), KeyCode.Alt, KeyCode.Left) +
             t('titleBar.showHistory')
           }
         >
@@ -119,7 +123,7 @@ export default function TitleBar(props: IProps) {
         <Tip
           disabled={next.length === 0}
           title={
-            showShortcutKey(t('titleBar.forward'), 'alt', 'right') +
+            showShortcutKey(t('titleBar.forward'), KeyCode.Alt, KeyCode.Right) +
             t('titleBar.showHistory')
           }
         >
@@ -147,7 +151,7 @@ export default function TitleBar(props: IProps) {
           onClose={() => setNextAnchor(null)}
         />
 
-        <Tip title={showShortcutKey('', 'ctrl', 'e')}>
+        <Tip title={showShortcutKey('', PRIMARY_MODIFIER_KEY, 'E')}>
           <Input
             aria-label={t('titleBar.search')}
             className={styles.search}
@@ -170,9 +174,9 @@ export default function TitleBar(props: IProps) {
         <Tip
           title={showShortcutKey(
             t('titleBar.songRecognition'),
-            'ctrl',
-            'shift',
-            'e',
+            PRIMARY_MODIFIER_KEY,
+            KeyCode.Shift,
+            'E',
           )}
         >
           <IconButton
@@ -212,7 +216,13 @@ export default function TitleBar(props: IProps) {
             </Avatar>
           </button>
         </Tip>
-        <Tip title={showShortcutKey(t('titleBar.miniWindow'), 'ctrl', 'm')}>
+        <Tip
+          title={showShortcutKey(
+            t('titleBar.miniWindow'),
+            PRIMARY_MODIFIER_KEY,
+            'M',
+          )}
+        >
           <button
             aria-label={t('titleBar.miniWindow')}
             className={`decorum-tb-btn ${styles.miniWindowBtn}`}

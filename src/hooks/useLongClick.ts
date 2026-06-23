@@ -1,6 +1,9 @@
 import type { MouseEvent, MouseEventHandler } from 'react';
 import { useRef } from 'react';
 
+/**
+ * 处理鼠标长按事件，通常将该hook返回值直接传递给对应组件即可。
+ */
 export default function useLongClick(
   onLongClick: MouseEventHandler,
   onClick?: MouseEventHandler,

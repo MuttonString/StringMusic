@@ -65,6 +65,15 @@ input,
 textarea,
 [contenteditable='true'] {
   user-select: text;
+
+  &::selection {
+    background-color: var(--mui-palette-primary-main);
+    color: var(--mui-palette-primary-contrastText);
+  }
+}
+
+.simplebar-scrollbar::before {
+  background: var(--mui-palette-text-secondary, rgba(0, 0, 0, 0.6));
 }
 
 div[data-tauri-decorum-tb] {

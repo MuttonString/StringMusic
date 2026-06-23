@@ -12,7 +12,7 @@ import {
   version,
 } from '@tauri-apps/plugin-os';
 import { useEffect, useState } from 'react';
-import ColorDialog from '../../components/ColorDialog';
+import ColorRing from '../../components/ColorRing';
 import useDetailHistory from '../../hooks/useDetailHistory';
 import useSettings from '../../hooks/useSettings';
 import { setBlurEffect } from '../../utils/windowOperation';
@@ -22,7 +22,6 @@ export default function Home() {
   // const { t } = useTranslation();
   const { goTo } = useDetailHistory();
   const [settings, updateSettings] = useSettings();
-  const [open, setOpen] = useState(false);
   const [disableAnimation, setDisableAnimation] = useState(
     settings!.personalization.disableAnimation,
   );
@@ -62,17 +61,8 @@ export default function Home() {
       <Button variant='contained' onClick={() => goTo('/settings')}>
         settings
       </Button>
-      <Button variant='contained' onClick={() => setOpen(true)}>
-        color
-      </Button>
-      <ColorDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        color={settings!.personalization.primaryColor.hex}
-        onColorChanged={(hex) => {
-          updateSettings('personalization.primaryColor.hex', hex);
-        }}
-      />
+      <br />
+      <ColorRing style={{ margin: '8px' }} />
       <br />
       <Button onClick={() => changeBlurEffect(0)}>BLUR</Button>
       <Button onClick={() => changeBlurEffect(1)}>ACRYLIC</Button>

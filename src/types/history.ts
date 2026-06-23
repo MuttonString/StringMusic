@@ -3,7 +3,7 @@ export type BrowsingItem = {
   title: string;
 };
 
-export enum PageAnimation {
+export const enum PageAnimation {
   Forward,
   Back,
   New,

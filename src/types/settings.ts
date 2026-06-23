@@ -1,16 +1,18 @@
-export enum CloseWindowAction {
+// 当某个枚举的数量变动时，务必在 src/components/Settings/index.tsx 中同步修改对应的getProperNumber的max参数
+
+export const enum CloseWindowAction {
   Ask,
   Minimize,
   Exit,
 }
 
-export enum ColorMode {
+export const enum ColorMode {
   FollowSystem,
   Light,
   Dark,
 }
 
-export enum BackgroundType {
+export const enum BackgroundType {
   Default,
   Translucent,
   /**
@@ -23,7 +25,7 @@ export enum BackgroundType {
   Folder,
 }
 
-export enum BlurEffect {
+export const enum BlurEffect {
   /**
    * Windows 7/10/11(22H1) only;
    * 6.0.5219 <= ver <= 6.2.8427 or 10.0.10074 <= ver < 10.0.22621
@@ -45,7 +47,7 @@ export enum BlurEffect {
   Vibrancy,
 }
 
-export enum CheckFrequency {
+export const enum CheckFrequency {
   Never,
   EveryDay,
   EveryWeek,

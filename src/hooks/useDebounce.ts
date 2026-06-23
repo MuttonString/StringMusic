@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+/**
+ * 将传入的函数转换为防抖函数。
+ */
 export default function useDebounce(
   fn: (...args: any[]) => any,
   delay: number,

@@ -2,6 +2,9 @@ import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { Effect } from '@tauri-apps/api/window';
 import { BlurEffect } from '../types/settings';
 
+/**
+ * 更改窗口标题
+ */
 export async function changeTitle(title: string) {
   try {
     await getCurrentWebviewWindow().setTitle(title);
@@ -10,6 +13,9 @@ export async function changeTitle(title: string) {
   }
 }
 
+/**
+ * 更改窗口模糊效果
+ */
 export async function setBlurEffect(effect?: BlurEffect | null) {
   const win = getCurrentWebviewWindow();
   const body = document.body;
@@ -17,7 +23,7 @@ export async function setBlurEffect(effect?: BlurEffect | null) {
   try {
     if (typeof effect !== 'number') {
       body.classList.remove('transparent-bg');
-      await new Promise((resolve) => setTimeout(resolve, 225));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       await win.clearEffects();
       return;
     }
