@@ -64,6 +64,7 @@ export default function TitleBar(props: IProps) {
     () => goForward(),
   );
 
+  // 监听macOS的窗口全屏事件
   const [hasLeftMargin, setHasLeftMargin] = useState(hasTrafficLights);
   useEffect(() => {
     if (!hasTrafficLights) return;
@@ -79,15 +80,13 @@ export default function TitleBar(props: IProps) {
     };
     fullscreenHandler();
 
-    let unlisten;
-    appWindow
-      .onResized(fullscreenHandler)
-      .then((fn) => (unlisten = fn))
-      .catch((err) => {
-        console.error('Can not listen window resize event: ' + err);
-      });
+    const unlisten = appWindow.onResized(fullscreenHandler).catch((err) => {
+      console.error('Can not listen window resize event: ' + err);
+    });
 
-    return unlisten;
+    return () => {
+      unlisten.then((fn) => fn?.());
+    };
   }, []);
 
   return (

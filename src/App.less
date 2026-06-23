@@ -49,6 +49,13 @@ button {
   );
 }
 
+.blur {
+  header[data-tauri-drag-region],
+  button.decorum-tb-btn {
+    color: var(--mui-palette-text-disabled, rgba(0, 0, 0, 0.38));
+  }
+}
+
 #root {
   height: 100vh;
   display: flex;
@@ -85,6 +92,7 @@ div[data-tauri-decorum-tb] {
   }
 
   & #decorum-tb-close:hover {
+    color: var(--mui-palette-error-contrastText, #fff);
     background-color: color-mix(
       in oklch,
       var(--mui-palette-error-main, #d32f2f),
