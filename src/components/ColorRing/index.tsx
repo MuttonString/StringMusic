@@ -11,22 +11,15 @@ import Tip from '../Tip';
 import styles from './index.module.less';
 
 const COLORS = [
-  ['colorRing.red', '#f44336'],
-  ['colorRing.pink', '#e91e63'],
-  ['colorRing.purple', '#9c27b0'],
-  ['colorRing.deepPurple', '#673ab7'],
-  ['colorRing.indigo', '#3f51b5'],
-  ['colorRing.blue', '#2196f3'],
-  ['colorRing.lightBlue', '#03a9f4'],
-  ['colorRing.cyan', '#00bcd4'],
-  ['colorRing.teal', '#009688'],
-  ['colorRing.green', '#4caf50'],
-  ['colorRing.lightGreen', '#8bc34a'],
-  ['colorRing.lime', '#cddc39'],
-  ['colorRing.yellow', '#ffeb3b'],
-  ['colorRing.amber', '#ffc107'],
-  ['colorRing.orange', '#ff9800'],
-  ['colorRing.deepOrange', '#ff5722'],
+  ['colorRing.red', '#e2483d'],
+  ['colorRing.orange', '#e06c00'],
+  ['colorRing.yellow', '#b38600'],
+  ['colorRing.lime', '#6a9a23'],
+  ['colorRing.green', '#22a06b'],
+  ['colorRing.cyan', '#2898bd'],
+  ['colorRing.blue', '#357de8'],
+  ['colorRing.purple', '#af59e1'],
+  ['colorRing.pink', '#cd519d'],
 ] as const;
 
 interface IProps {
@@ -54,7 +47,7 @@ export default function ColorRing(props: IProps) {
             className={styles.colorBtn}
             style={{
               background: colorInfo[1],
-              transform: `rotate(${22.5 * idx}deg)`,
+              transform: `rotate(${40 * idx}deg)`,
             }}
             onClick={() =>
               updateSettings('personalization.primaryColor.hex', colorInfo[1])
@@ -65,7 +58,6 @@ export default function ColorRing(props: IProps) {
       <Tip title={t('colorRing.custom')}>
         <IconButton
           disabled={disabled}
-          size='large'
           className={styles.customBtn}
           onClick={() => setOpen(true)}
         >

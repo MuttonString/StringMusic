@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 
-export const DEFAULT_COLOR = '#92c586';
+export const DEFAULT_COLOR = '#6a9a23';
 
 /**
  * 获取操作系统主题色

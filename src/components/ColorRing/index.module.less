@@ -2,24 +2,25 @@
   position: relative;
   border-radius: 50% !important;
   overflow: hidden;
-  @r: 80px;
+  @r: 60px;
   width: 2 * @r;
   height: 2 * @r;
   box-shadow: var(--mui-shadows-2);
+  background: var(--mui-palette-Button-inheritContainedBg, #e0e0e0);
 
   &Disabled {
     cursor: not-allowed;
 
     .colorBtn {
-      filter: grayscale(50%);
+      filter: grayscale(80%);
     }
   }
 
   .colorBtn {
     position: absolute;
-    width: calc(2 * @r * tan(11.25deg));
+    width: calc(2 * @r * tan(20deg));
     height: @r;
-    left: calc(@r - tan(11.25deg) * @r);
+    left: calc(@r - tan(20deg) * @r);
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: bottom;
     transition: filter 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -31,8 +32,8 @@
   }
 
   .customBtn {
-    left: 56px;
-    top: 56px;
+    left: 40px;
+    top: 40px;
     background-color: var(
       --mui-palette-Button-inheritContainedBg,
       #e0e0e0
