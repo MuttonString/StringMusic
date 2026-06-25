@@ -10,8 +10,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    min-width: var(--side-bar-width, 250px);
-    max-width: var(--side-bar-width, 250px);
+    @w: calc(var(--side-bar-width, 250px) - 12px);
+    min-width: @w;
+    max-width: @w;
     padding-inline-start: 12px;
     pointer-events: none;
     z-index: 10000;
@@ -28,13 +29,17 @@
     height: var(--title-bar-height, 40px);
     display: flex;
     align-items: center;
-    margin-inline-end: 36px;
+    margin-inline-end: 32px;
 
     .search {
-      margin-inline-start: 36px;
-      width: 100%;
-      max-width: 400px;
+      margin-inline-start: 32px;
       z-index: 101;
+      height: fit-content;
+      padding-inline-start: 4px;
+
+      & > * {
+        padding: 4px;
+      }
     }
 
     .btn {

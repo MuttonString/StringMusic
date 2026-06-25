@@ -12,8 +12,7 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { type } from '@tauri-apps/plugin-os';
 import type { MouseEvent } from 'react';
@@ -108,6 +107,7 @@ export default function TitleBar(props: IProps) {
         >
           <IconButton
             aria-label={t('titleBar.back')}
+            size='small'
             className={styles.btn}
             disabled={prev.length === 0}
             {...onPrevLongClick}
@@ -128,6 +128,7 @@ export default function TitleBar(props: IProps) {
         >
           <IconButton
             aria-label={t('titleBar.forward')}
+            size='small'
             className={styles.btn}
             disabled={next.length === 0}
             {...onNextLongClick}
@@ -151,21 +152,19 @@ export default function TitleBar(props: IProps) {
         />
 
         <Tip title={showShortcutKey('', PRIMARY_MODIFIER_KEY, 'E')}>
-          <Input
+          <OutlinedInput
             aria-label={t('titleBar.search')}
-            className={styles.search}
             size='small'
+            className={styles.search}
             placeholder={t('titleBar.search')}
-            endAdornment={
-              <InputAdornment position='end'>
-                <IconButton aria-label={t('titleBar.search')}>
-                  {sharp ? (
-                    <SearchSharpIcon fontSize='small' />
-                  ) : (
-                    <SearchRoundedIcon fontSize='small' />
-                  )}
-                </IconButton>
-              </InputAdornment>
+            startAdornment={
+              <IconButton aria-label={t('titleBar.search')} size='small'>
+                {sharp ? (
+                  <SearchSharpIcon fontSize='small' />
+                ) : (
+                  <SearchRoundedIcon fontSize='small' />
+                )}
+              </IconButton>
             }
           />
         </Tip>
@@ -180,6 +179,7 @@ export default function TitleBar(props: IProps) {
         >
           <IconButton
             aria-label={t('titleBar.songRecognition')}
+            size='small'
             className={styles.btn}
           >
             {sharp ? (

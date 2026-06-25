@@ -45,7 +45,7 @@ button {
   --bg-color: color-mix(
     in oklch,
     var(--mui-palette-background-default, #fff),
-    transparent 50%
+    transparent 20%
   );
 }
 
@@ -53,6 +53,13 @@ button {
   header[data-tauri-drag-region],
   button.decorum-tb-btn {
     color: var(--mui-palette-text-disabled, rgba(0, 0, 0, 0.38));
+  }
+
+  header[data-tauri-drag-region] {
+    --mui-palette-action-active: var(
+      --mui-palette-text-secondary,
+      rgba(0, 0, 0, 0.6)
+    );
   }
 }
 
