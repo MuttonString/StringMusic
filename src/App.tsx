@@ -27,7 +27,18 @@ function App() {
 
   // 窗口失去焦点时的样式变化
   useEffect(() => {
-    const unlisten = getCurrentWebviewWindow()
+    const appWindow = getCurrentWebviewWindow();
+
+    appWindow
+      .isFocused()
+      .then((val) => {
+        if (!val) document.body.classList.add('blur');
+      })
+      .catch((err) =>
+        console.error('Failed to get window focus state: ' + err),
+      );
+
+    const unlisten = appWindow
       .onFocusChanged((e) => {
         if (e.payload) {
           document.body.classList.remove('blur');
