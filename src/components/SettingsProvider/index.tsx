@@ -8,7 +8,6 @@ import { load } from '@tauri-apps/plugin-store';
 import type { ReactNode } from 'react';
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type DeepPartial from '../../types/deepPartial';
 import type { ISettings } from '../../types/settings';
 import { BackgroundType } from '../../types/settings';
 import { DEFAULT_COLOR, getPrimaryColor } from '../../utils/color';
@@ -208,10 +207,8 @@ export default function SettingsProvider({ children }: IProps) {
           },
           font: {
             global: config.personalization?.font?.global || '',
-            sc: config.personalization?.font?.sc || '',
-            tc: config.personalization?.font?.tc || '',
-            jp: config.personalization?.font?.jp || '',
-            kr: config.personalization?.font?.kr || '',
+            zh: config.personalization?.font?.zh || '',
+            ja: config.personalization?.font?.ja || '',
           },
           advancedMaterial: getProperBool(
             config.personalization?.advancedMaterial,

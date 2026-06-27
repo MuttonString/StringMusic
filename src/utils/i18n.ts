@@ -1,3 +1,4 @@
+import { invoke } from '@tauri-apps/api/core';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -80,3 +81,23 @@ i18n.use(initReactI18next).init({
 });
 
 export default i18n;
+
+/**
+ * 检测字符串语言，若非汉语、日语，返回空字符串
+ */
+export async function detectLang(text: string): Promise<'zh' | 'ja' | ''> {
+  try {
+    const lang = await invoke('detect_lang', { text });
+    switch (lang) {
+      case 'Chinese':
+        return 'zh';
+      case 'Japanese':
+        return 'ja';
+      default:
+        return '';
+    }
+  } catch (err) {
+    console.error('Failed to detect text language: ' + err);
+    return '';
+  }
+}

@@ -32,6 +32,7 @@ tauri-plugin-store = "2"
 tauri-plugin-log = "2"
 log = "0.4"
 chrono = "0.4"
+lingua = { version = "1.6.2", default-features = false, features = ["chinese", "japanese"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-single-instance = "2"

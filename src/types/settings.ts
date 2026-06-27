@@ -110,19 +110,11 @@ export interface ISettings {
       /**
        * Follow global when empty
        */
-      sc: string;
+      zh: string;
       /**
        * Follow global when empty
        */
-      tc: string;
-      /**
-       * Follow global when empty
-       */
-      jp: string;
-      /**
-       * Follow global when empty
-       */
-      kr: string;
+      ja: string;
     };
     advancedMaterial: boolean;
     disableAnimation: boolean;

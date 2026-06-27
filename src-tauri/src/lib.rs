@@ -6,6 +6,7 @@ use crate::color::setup_accent_color_listener;
 mod color;
 mod devtools;
 mod webview_ver;
+mod detect_lang;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -93,6 +94,7 @@ pub fn run() {
             webview_ver::webview_ver,
             color::get_accent_color,
             devtools::open_devtools,
+            detect_lang::detect_lang,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
