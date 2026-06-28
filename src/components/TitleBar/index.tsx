@@ -4,10 +4,10 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import ArrowBackSharpIcon from '@mui/icons-material/ArrowBackSharp';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import ArrowForwardSharpIcon from '@mui/icons-material/ArrowForwardSharp';
-import FeaturedVideoRoundedIcon from '@mui/icons-material/FeaturedVideoRounded';
-import FeaturedVideoSharpIcon from '@mui/icons-material/FeaturedVideoSharp';
 import MicRoundedIcon from '@mui/icons-material/MicRounded';
 import MicSharpIcon from '@mui/icons-material/MicSharp';
+import PictureInPictureRoundedIcon from '@mui/icons-material/PictureInPictureRounded';
+import PictureInPictureSharpIcon from '@mui/icons-material/PictureInPictureSharp';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import Avatar from '@mui/material/Avatar';
@@ -230,9 +230,9 @@ export default function TitleBar(props: IProps) {
             }}
           >
             {sharp ? (
-              <FeaturedVideoSharpIcon fontSize='small' />
+              <PictureInPictureSharpIcon fontSize='small' />
             ) : (
-              <FeaturedVideoRoundedIcon fontSize='small' />
+              <PictureInPictureRoundedIcon fontSize='small' />
             )}
           </button>
         </Tip>
