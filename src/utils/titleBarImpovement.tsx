@@ -59,12 +59,21 @@ if (type() === 'windows') {
         const [isMax, setIsMax] = useState(false);
 
         useEffect(() => {
-          appWindow
-            .isMaximized()
-            .then(setIsMax)
-            .catch((err) =>
-              console.error('Failed to get window state: ' + err),
-            );
+          const handleMaximize = () =>
+            appWindow
+              .isMaximized()
+              .then(setIsMax)
+              .catch((err) =>
+                console.error('Failed to get window state: ' + err),
+              );
+
+          const unlisten = appWindow.onResized(handleMaximize).catch((err) => {
+            console.error('Can not listen window resize event: ' + err);
+          });
+
+          return () => {
+            unlisten.then((val) => val?.());
+          };
         }, [appWindow]);
 
         return (
@@ -80,7 +89,6 @@ if (type() === 'windows') {
             <button
               id='decorum-tb-minimize'
               className='decorum-tb-btn'
-              style={{ fontSize: '1em' }}
               onClick={() => appWindow.minimize()}
             >
               🗕
@@ -88,18 +96,13 @@ if (type() === 'windows') {
             <button
               id='decorum-tb-maximize'
               className='decorum-tb-btn'
-              style={{ fontSize: '1em' }}
-              onClick={async () => {
-                await appWindow.toggleMaximize();
-                setIsMax(await appWindow.isMaximized());
-              }}
+              onClick={() => appWindow.toggleMaximize()}
             >
               {isMax ? '🗗' : '🗖'}
             </button>
             <button
               id='decorum-tb-close'
               className='decorum-tb-btn'
-              style={{ fontSize: '1em' }}
               onClick={() => appWindow.close()}
             >
               🗙

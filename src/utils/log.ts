@@ -11,6 +11,7 @@ function forwardConsole(
         return !(typeof arg === 'string' && /^DECORUM/.test(arg));
       });
       if (filtered.length) {
+        // 重写原生console会导致浏览器控制台无法查看输出的准确来源，如有需要可在main.tsx中取消引用本文件
         original(...filtered);
         logger(JSON.stringify(filtered[0]));
       }

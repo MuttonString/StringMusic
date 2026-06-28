@@ -36,7 +36,7 @@ interface IProps {
 }
 
 const hasTrafficLights = type() === 'macos';
-const hasRightThreeButtons = type() === 'windows';
+const hasRightThreeButtons = ['windows', 'linux'].includes(type());
 
 export default function TitleBar(props: IProps) {
   const [settings] = useSettings();
