@@ -4,9 +4,9 @@ use tauri_plugin_log::{Target, TargetKind, log};
 
 use crate::color::setup_accent_color_listener;
 mod color;
+mod detect_lang;
 mod devtools;
 mod webview_ver;
-mod detect_lang;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -79,14 +79,11 @@ pub fn run() {
                 }
             });
 
-            #[cfg(any(target_os = "macos", target_os = "windows"))]
-            {
-                main_window.create_overlay_titlebar().unwrap();
+            main_window.create_overlay_titlebar().unwrap();
 
-                #[cfg(target_os = "macos")]
-                {
-                    main_window.make_transparent().unwrap();
-                }
+            #[cfg(target_os = "macos")]
+            {
+                main_window.make_transparent().unwrap();
             }
             Ok(())
         })

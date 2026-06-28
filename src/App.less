@@ -11,7 +11,6 @@ body {
   --bg-color: var(--mui-palette-background-default, #fff);
   --title-bar-btn-width: 48px;
   --title-bar-height: 40px;
-  --title-bar-font-size: 10px;
   --side-bar-width: 250px;
   --op-bar-height: 96px;
 }
@@ -109,14 +108,18 @@ div[data-tauri-decorum-tb] {
 }
 
 button.decorum-tb-btn {
+  background-color: transparent !important;
+  border-radius: 0 !important;
   color: var(--mui-palette-text-primary, rgba(0, 0, 0, 0.87));
   width: var(--title-bar-btn-width, 48px);
   min-width: var(--title-bar-btn-width, 48px);
   height: var(--title-bar-height, 40px);
-  font-size: var(--title-bar-font-size, 10px);
 
   &:hover {
-    background-color: var(--mui-palette-action-hover, rgba(0, 0, 0, 0.04));
+    background-color: var(
+      --mui-palette-action-hover,
+      rgba(0, 0, 0, 0.04)
+    ) !important;
   }
 
   &:focus-visible {

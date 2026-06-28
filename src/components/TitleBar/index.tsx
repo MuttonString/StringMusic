@@ -224,12 +224,16 @@ export default function TitleBar(props: IProps) {
         >
           <button
             aria-label={t('titleBar.miniWindow')}
-            className={`decorum-tb-btn ${styles.miniWindowBtn}`}
+            className='decorum-tb-btn'
             onClick={() => {
               onToggleMiniWindow();
             }}
           >
-            {sharp ? <FeaturedVideoSharpIcon /> : <FeaturedVideoRoundedIcon />}
+            {sharp ? (
+              <FeaturedVideoSharpIcon fontSize='small' />
+            ) : (
+              <FeaturedVideoRoundedIcon fontSize='small' />
+            )}
           </button>
         </Tip>
       </div>

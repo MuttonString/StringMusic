@@ -12,48 +12,18 @@ import './App.less';
 import DetailHistoryProvider from './components/DetailHistoryProvider';
 import Footer from './components/Footer';
 import MainContent from './components/MainContent';
-
 import SideBar from './components/SideBar';
 import TitleBar from './components/TitleBar';
 import useSettings from './hooks/useSettings';
 import { ColorMode } from './types/settings';
 import { isDarkMode, listenColorMode } from './utils/color';
 import './utils/i18n';
+import './utils/titleBarImpovement';
 
 function App() {
   const { t } = useTranslation();
   const [settings] = useSettings();
   const [theme, setTheme] = useState(createTheme({ cssVariables: true }));
-
-  // 窗口失去焦点时的样式变化
-  useEffect(() => {
-    const appWindow = getCurrentWebviewWindow();
-
-    appWindow
-      .isFocused()
-      .then((val) => {
-        if (!val) document.body.classList.add('blur');
-      })
-      .catch((err) =>
-        console.error('Failed to get window focus state: ' + err),
-      );
-
-    const unlisten = appWindow
-      .onFocusChanged((e) => {
-        if (e.payload) {
-          document.body.classList.remove('blur');
-        } else {
-          document.body.classList.add('blur');
-        }
-      })
-      .catch((err) =>
-        console.error('Can not listen focus changed event: ' + err),
-      );
-
-    return () => {
-      unlisten.then((fn) => fn?.());
-    };
-  }, []);
 
   const isDevOptEnabled = settings?.developerOptions.enabled;
   const dir = t('dir').toLowerCase(); // TODO 后续改成从JSON文件direction取值

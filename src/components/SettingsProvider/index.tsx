@@ -1,7 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { message } from '@tauri-apps/plugin-dialog';
-import { type } from '@tauri-apps/plugin-os';
 import { relaunch } from '@tauri-apps/plugin-process';
 import type { Store } from '@tauri-apps/plugin-store';
 import { load } from '@tauri-apps/plugin-store';
@@ -60,32 +58,6 @@ export default function SettingsProvider({ children }: IProps) {
 
   // init
   useEffect(() => {
-    // 修复最大化窗口的还原按钮图标bug
-    if (type() === 'windows') {
-      const appWindow = getCurrentWebviewWindow();
-      const observer = new MutationObserver(() => {
-        const maxBtn = document.getElementById('decorum-tb-maximize');
-        if (maxBtn) {
-          observer.disconnect();
-          appWindow
-            .isMaximized()
-            .then((val) => {
-              if (val) {
-                maxBtn.innerHTML = '\ue923';
-              }
-            })
-            .catch((err) =>
-              console.error('Failed to get window state: ' + err),
-            );
-        }
-      });
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        characterData: false,
-      });
-    }
-
     const init = async () => {
       let store: Store;
       const config: DeepPartial<ISettings> = {};
