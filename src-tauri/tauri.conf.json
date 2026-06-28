@@ -10,7 +10,6 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "macOSPrivateApi": true,
     "windows": [
       {
         "label": "main",
@@ -21,8 +20,6 @@
         "minHeight": 400,
         "transparent": true,
         "visible": false,
-        "hiddenTitle": true,
-        "titleBarStyle": "Overlay",
         "decorations": false
       }
     ],
