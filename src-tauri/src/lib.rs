@@ -122,7 +122,7 @@ pub fn run() {
 
             panic::set_hook(Box::new(move |panic_info| {
                 let loc = panic_info.location().unwrap();
-                let msg = panic_info.payload().downcast_ref::<&str>().unwrap();
+                let msg = panic_info.payload().downcast_ref::<&str>().map_or("Unknown", |v| v);
                 let message = format!("{}:{} {}", loc.file(), loc.line(), msg);
                 log::error!("{}", message);
                 app_handle_panic

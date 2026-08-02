@@ -190,19 +190,11 @@ export function BackgroundSettings(props: IProps) {
                 });
                 break;
               case BlurEffect.Mica:
-                body.style.setProperty(
-                  '--bg-color',
-                  'color-mix(in oklch, var(--mui-palette-background-default), transparent 80%)',
-                );
                 await win.setEffects({
                   effects: [Effect.Mica],
                 });
                 break;
               case BlurEffect.Vibrancy:
-                body.style.setProperty(
-                  '--bg-color',
-                  'color-mix(in oklch, var(--mui-palette-background-default), transparent 80%)',
-                );
                 await win.setEffects({
                   effects: [Effect.Sidebar],
                 });
