@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>String Music</title>
     <script>
-      window.startTimestamp = Date.now();
+      window.desktop = ['windows', 'macos', 'linux'].includes(
+        __TAURI_PLUGIN_OS__.type(),
+      );
     </script>
   </head>
 

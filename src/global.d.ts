@@ -3,7 +3,10 @@ type DeepPartial<T> = {
 };
 
 interface Window {
-  startTimestamp?: number;
+  /**
+   * 是否是桌面操作系统
+   */
+  desktop: boolean;
 }
 
 interface KeyboardEvent {

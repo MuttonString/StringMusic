@@ -6,6 +6,10 @@
   "permissions": [
     "core:default",
     "opener:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [{ "path": "$APPDATA" }, { "path": "$APPLOG" }]
+    },
     "core:window:default",
     "core:window:allow-set-theme",
     "core:window:allow-destroy",
@@ -16,6 +20,7 @@
     "core:window:allow-set-position",
     "core:window:allow-set-size-constraints",
     "core:window:allow-set-effects",
+    "core:window:allow-set-resizable",
     "core:window:allow-close",
     "core:window:allow-center",
     "core:window:allow-minimize",
@@ -25,11 +30,20 @@
     "core:window:allow-is-maximized",
     "core:window:allow-start-dragging",
     "core:window:allow-toggle-maximize",
+    "core:window:allow-set-fullscreen",
     "decorum:allow-show-snap-overlay",
     "os:default",
     "dialog:default",
     "process:default",
     "store:default",
-    "log:default"
+    "log:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "**/*" }]
+    },
+    "fs:read-all",
+    "fs:write-all",
+    "fs:allow-watch",
+    "fs:allow-unwatch"
   ]
 }

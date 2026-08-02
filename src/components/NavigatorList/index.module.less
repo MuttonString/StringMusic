@@ -1,0 +1,45 @@
+.navigatorList {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  @leftAndRight: 8px;
+  @trans: calc(var(--duration) * 250ms) ease-in-out;
+  @transition:
+    height @trans,
+    opacity @trans,
+    padding @trans;
+
+  .normal {
+    height: 40px;
+    padding: 4px @leftAndRight;
+    margin: 2px @leftAndRight;
+    opacity: 1;
+    border-radius: 8px;
+    transition: @transition;
+  }
+
+  .disabled {
+    height: 0;
+    padding: 0 @leftAndRight;
+    opacity: 0;
+    overflow: clip;
+    visibility: hidden;
+    transition: @transition;
+  }
+
+  ul {
+    // 消除ul内元素间空隙
+    display: flex;
+    flex-direction: column;
+  }
+
+  ul:first-child {
+    padding-top: 0;
+  }
+
+  ul:last-child {
+    padding-bottom: 0;
+  }
+}

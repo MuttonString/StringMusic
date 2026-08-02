@@ -36,11 +36,9 @@ npm i
 npm run tauri dev
 ```
 
-## 规范
+双击“设置 - 关于 - 应用程序版本”可启用开发者选项
 
-### 语言文件
+## 资源文件
 
-语言文件采用 JSON 编写，文件类型为 `*.json`，文件名需符合 [BCP 47](https://mdn.org.cn/en-US/docs/Glossary/BCP_47_language_tag) 语法。
-完整的文件名应当是 `语言子标签-文字子标签-地区子标签.json`，其中，文字子标签和地区子标签可以省略。例如这些的文件名是符合规范的：`zh.json` `zh-CN.json` `zh-Hans.json` `zh-Hans-CN.json`。虽然不符合规范的 JSON 文件也可以被本应用程序正常使用，但语言设置为“自动”时，程序无法根据操作系统的语言匹配到该文件。
-当语言设置为“自动”时，程序会按照以下顺序匹配语言文件（未获取到某子标签则会跳过该步）：
-`系统语言子标签-系统文字子标签-系统地区子标签.json`→`系统语言子标签-系统地区子标签.json`→`系统语言子标签-系统文字子标签.json`→`系统语言子标签.json`→`en.json`
+包括语言、在线音乐源。若想创建和上传自己的资源文件，参照：
+<https://github.com/MuttonString/StringMusicResource>

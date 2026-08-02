@@ -9,7 +9,7 @@ fn accent_color_to_hex(color: AccentColor) -> String {
         let b = (srgba.blue * 255.0).round() as u8;
         format!("#{:02x}{:02x}{:02x}", r, g, b)
     } else {
-        "#000000".to_string()
+        "#2898bd".to_string()
     }
 }
 

@@ -6,11 +6,10 @@ import type { DialogProps } from '@mui/material/Dialog';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import SimpleBar from 'simplebar-react';
-import useSettings from '../../hooks/useSettings';
 import { KeyCode } from '../../utils/shortcutKey';
 import Tip from '../Tip';
 import styles from './index.module.less';
@@ -19,11 +18,13 @@ interface IProps {
   open: boolean;
   onClose?: () => void;
   onConfirm?: () => void;
+  extraAction?: ReactNode;
   confirmDisabled?: boolean;
   title?: string;
   children?: ReactNode;
   maxWidth: DialogProps['maxWidth'];
   fullWidth?: boolean;
+  sharp?: boolean;
 }
 
 export default function DialogTemplate(props: IProps) {
@@ -31,15 +32,15 @@ export default function DialogTemplate(props: IProps) {
     open,
     onClose,
     onConfirm,
+    extraAction,
     confirmDisabled,
     title,
     children,
     maxWidth,
     fullWidth = true,
+    sharp,
   } = props;
-  const [settings] = useSettings();
   const { t } = useTranslation();
-  const sharp = settings?.personalization.disableRoundCorner;
 
   return (
     <Dialog
@@ -59,10 +60,10 @@ export default function DialogTemplate(props: IProps) {
       }}
     >
       <DialogTitle sx={{ padding: '8px 24px' }} className={styles.dialogTitle}>
-        {title}
+        <span>{title}</span>
         <div className={styles.actions}>
           {onClose && (
-            <Tip title={t('dialog.close')}>
+            <Tip title={t('dialog.cancel')}>
               <IconButton onClick={onClose}>
                 {sharp ? <CloseSharpIcon /> : <CloseRoundedIcon />}
               </IconButton>
@@ -79,17 +80,11 @@ export default function DialogTemplate(props: IProps) {
               </IconButton>
             </Tip>
           )}
+          {extraAction}
         </div>
       </DialogTitle>
-      <DialogContent dividers sx={{ padding: 0 }}>
-        <SimpleBar
-          tabIndex={-1}
-          className={styles.dialogContent}
-          autoHide={false}
-        >
-          {children}
-        </SimpleBar>
-      </DialogContent>
+      <Divider />
+      <DialogContent>{children}</DialogContent>
     </Dialog>
   );
 }

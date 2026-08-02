@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Create a report with English|简体中文|繁體中文|日本語
-title: "[BUG] xxx"
+title: '[BUG] xxx'
 labels: bug
 assignees: MuttonString
-
 ---
 
 **Describe 描述**

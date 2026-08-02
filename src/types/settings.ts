@@ -22,6 +22,9 @@ export const enum BackgroundType {
    */
   Blur,
   Picture,
+  /**
+   * Desktop only
+   */
   Folder,
 }
 
@@ -48,28 +51,39 @@ export const enum BlurEffect {
 }
 
 export const enum CheckFrequency {
-  Never,
   EveryDay,
   EveryWeek,
   EveryMonth,
+  Never,
+}
+
+export const enum ShowWave {
+  Never,
+  OnHover,
+  Always,
+}
+
+interface BackgroundSettings {
+  type: BackgroundType;
+  /**
+   * 0~100
+   */
+  opacity: number;
+  blurEffect: BlurEffect;
+  picture: string;
+  folder: string;
 }
 
 export interface ISettings {
   common: {
     /**
-     * Windows/macOS/Linux only
-     */
-    autorun: boolean;
-    closeWindow: CloseWindowAction;
-  };
-
-  internationalization: {
-    /**
      * Follow system when empty
      */
     language: string;
-    detectNameLanguage: boolean;
-    detectLyricLanguage: boolean;
+    /**
+     * Windows/Linux only
+     */
+    closeWindow: CloseWindowAction;
   };
 
   desktopLyric: {
@@ -79,29 +93,11 @@ export interface ISettings {
   personalization: {
     colorMode: ColorMode;
     primaryColor: {
-      auto: boolean;
+      followSystem: boolean;
       hex: string;
     };
-    background: {
-      type: BackgroundType;
-      /**
-       * 0~100
-       */
-      opacity: number;
-      blurEffect: BlurEffect;
-      picturePath: string;
-      folderPath: string;
-    };
-    backgroundMini: {
-      type: BackgroundType;
-      /**
-       * 0~100
-       */
-      opacity: number;
-      blurEffect: BlurEffect;
-      picturePath: string;
-      folderPath: string;
-    };
+    background: BackgroundSettings;
+    backgroundMini: BackgroundSettings;
     font: {
       /**
        * Default when empty
@@ -115,20 +111,42 @@ export interface ISettings {
        * Follow global when empty
        */
       ja: string;
+      /**
+       * Follow global when empty
+       */
+      other: string;
     };
     advancedMaterial: boolean;
-    disableAnimation: boolean;
     disableRoundCorner: boolean;
+    animationDuration: number;
   };
 
-  about: {
+  playback: {
+    coverRotate: boolean;
+  };
+
+  privacy: {
+    recommendation: boolean;
+    recent: boolean;
+    searchHistory: boolean;
+    savePlaying: boolean;
+  };
+
+  download: {
+    autoClear: boolean;
+    maxCount: number;
+    finishTip: boolean;
+  };
+
+  update: {
     checkUpdate: CheckFrequency;
+    timestamp: number;
   };
 
   developerOptions: {
     enabled: boolean;
     forceRTL: boolean;
     showFooter: boolean;
-    showUnsupportedOperations: boolean;
+    script: string;
   };
 }

@@ -6,8 +6,8 @@ import svgr from 'vite-plugin-svgr';
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
-export default defineConfig(async () => ({
-  plugins: [react(), svgr()],
+export default defineConfig({
+  plugins: [react(), svgr({ svgrOptions: { svgo: false } })],
   build: {
     rollupOptions: {
       input: {
@@ -36,5 +36,20 @@ export default defineConfig(async () => ({
       // 3. tell Vite to ignore watching `src-tauri`
       ignored: ['**/src-tauri/**'],
     },
+    proxy: {
+      '/_': {
+        changeOrigin: true,
+        target: 'https://127.0.0.1/',
+        secure: false,
+        rewrite: (path) => path.replace(/^\/_https?:\/\/[^/]+/, ''),
+        configure: (proxy, options) => {
+          // @ts-ignore
+          proxy.on('proxyReq', (_, req) => {
+            const target = req.originalUrl.match(/^\/_(https?:\/\/[^/]+)/)[1];
+            options.target = target;
+          });
+        },
+      },
+    },
   },
-}));
+});

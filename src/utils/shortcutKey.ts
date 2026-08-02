@@ -3,6 +3,25 @@ import { type } from '@tauri-apps/plugin-os';
 const os = type();
 const isMac = ['macos', 'ios'].includes(os);
 
+// 禁用DevTools快捷键
+window.addEventListener(
+  'keydown',
+  (e) => {
+    if (e.primaryKey && e.shiftKey && e.code === 'KeyI') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if (e.key === 'F12') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  },
+  true,
+);
+
 Object.defineProperty(KeyboardEvent.prototype, 'primaryKey', {
   get(this) {
     return isMac ? this.metaKey : this.ctrlKey;
@@ -40,18 +59,19 @@ export const DELETE_KEY = isMac ? KeyCode.Backspace : KeyCode.Del;
  */
 export const PRIMARY_MODIFIER_KEY = isMac ? KeyCode.Meta : KeyCode.Ctrl;
 
-const KEY_ABBR: { [key: string]: string } = {
+const KEY_ABBR: Record<string, string> = {
   [KeyCode.Up]: '↑',
   [KeyCode.Down]: '↓',
   [KeyCode.Left]: '←',
   [KeyCode.Right]: '→',
   [KeyCode.Ctrl]: 'Ctrl',
   [KeyCode.Del]: 'Del',
+  [KeyCode.Esc]: 'Esc',
   [KeyCode.PgUp]: 'PgUp',
   [KeyCode.PgDown]: 'PgDn',
 } as const;
 
-const KEY_MAC: { [key: string]: string } = {
+const KEY_MAC: Record<string, string> = {
   [KeyCode.Ctrl]: '⌃',
   [KeyCode.Alt]: '⌥',
   [KeyCode.Shift]: '⇧',

@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import type { PopoverVirtualElement } from '@mui/material/Popover';
 import useDelayedState from '../../hooks/useDelayedState';
 import useDetailHistory from '../../hooks/useDetailHistory';
+import useSettings from '../../hooks/useSettings';
 
 interface IProps {
   isBack: boolean;
@@ -20,8 +21,10 @@ interface IProps {
 export default function BrowsingHistory(props: IProps) {
   const { isBack, anchorEl, onClose } = props;
   const { prev, next, goBack, goForward } = useDetailHistory();
-  const [prevDelayed, isPrevPending] = useDelayedState(prev);
-  const [nextDelayed, isNextPending] = useDelayedState(next);
+  const [settings] = useSettings();
+  const delay = (settings?.personalization.animationDuration ?? 1) * 300;
+  const [prevDelayed, isPrevPending] = useDelayedState(prev, delay);
+  const [nextDelayed, isNextPending] = useDelayedState(next, delay);
 
   return (
     <Menu

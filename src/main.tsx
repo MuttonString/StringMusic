@@ -1,18 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router';
-import SettingsProvider from './components/SettingsProvider';
+import ErrorBoundary from './components/ErrorBoundary';
+import GlobalProvider from './components/GlobalProvider';
+import './utils/anchorElement';
+import './utils/i18n';
+// import './utils/log';
 import router from './utils/router';
-
-// 如需在浏览器控制台查看输出的准确来源，注释下一行以关闭日志功能
-import './utils/log';
-
-console.info('Creating React DOM...');
+import './utils/shortcutKey';
+import './utils/titlebar';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <SettingsProvider>
-      <RouterProvider router={router} />
-    </SettingsProvider>
-  </React.StrictMode>,
+  <ErrorBoundary>
+    <React.StrictMode>
+      <GlobalProvider>
+        <RouterProvider router={router} />
+      </GlobalProvider>
+    </React.StrictMode>
+  </ErrorBoundary>,
 );

@@ -2,10 +2,10 @@ import PaletteRoundedIcon from '@mui/icons-material/PaletteRounded';
 import PaletteSharpIcon from '@mui/icons-material/PaletteSharp';
 import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
-import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSettings from '../../hooks/useSettings';
+import type { ISettings } from '../../types/settings';
+import classNames from '../../utils/classNames';
 import ColorDialog from '../ColorDialog';
 import Tip from '../Tip';
 import styles from './index.module.less';
@@ -23,22 +23,23 @@ const COLORS = [
 ] as const;
 
 interface IProps {
-  style?: CSSProperties;
-  className?: string;
+  settings?: ISettings;
+  updateSettings: (key: string, value: {}) => Promise<void>;
   disabled?: boolean;
 }
 
 export default function ColorRing(props: IProps) {
   const { t } = useTranslation();
-  const { style, className, disabled } = props;
-  const [settings, updateSettings] = useSettings();
+  const { settings, updateSettings, disabled } = props;
   const sharp = settings?.personalization.disableRoundCorner;
   const [open, setOpen] = useState(false);
 
   return (
     <div
-      className={`${styles.colorRing} ${className} ${disabled ? ` ${styles.colorRingDisabled}` : ''}`}
-      style={style}
+      className={classNames(
+        styles.colorRing,
+        disabled && styles.colorRingDisabled,
+      )}
     >
       {COLORS.map((colorInfo, idx) => (
         <Tip key={idx} title={t(colorInfo[0])}>
@@ -61,7 +62,11 @@ export default function ColorRing(props: IProps) {
           className={styles.customBtn}
           onClick={() => setOpen(true)}
         >
-          {sharp ? <PaletteSharpIcon /> : <PaletteRoundedIcon />}
+          {sharp ? (
+            <PaletteSharpIcon color={disabled ? 'disabled' : 'primary'} />
+          ) : (
+            <PaletteRoundedIcon color={disabled ? 'disabled' : 'primary'} />
+          )}
         </IconButton>
       </Tip>
       <ColorDialog
@@ -71,6 +76,8 @@ export default function ColorRing(props: IProps) {
         onColorChanged={(hex) => {
           updateSettings('personalization.primaryColor.hex', hex);
         }}
+        sharp={settings?.personalization.disableRoundCorner}
+        animationDuration={settings?.personalization.animationDuration ?? 1}
       />
     </div>
   );

@@ -1,18 +1,43 @@
 body {
-  font-family: sans-serif;
   user-select: none;
   cursor: default;
-  overflow: hidden;
+  overflow: clip;
   margin: 0;
   padding: 0;
-  background-color: var(--mui-palette-AppBar-defaultBg, #f5f5f5);
-  transition: background-color 225ms cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: var(--mui-palette-AppBar-defaultBg);
+  transition: background-color calc(var(--duration) * 225ms)
+    cubic-bezier(0.4, 0, 0.2, 1);
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
 
-  --bg-color: var(--mui-palette-background-default, #fff);
+  --font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  --duration: 1;
+  --opacity: 80%;
+  --bg-color: color-mix(
+    in oklch,
+    var(--mui-palette-background-default),
+    transparent calc(100% - var(--opacity))
+  );
   --title-bar-btn-width: 48px;
   --title-bar-height: 40px;
   --side-bar-width: 250px;
-  --op-bar-height: 96px;
+  --media-bar-height: 100px;
+}
+
+.MuiPopover-paper {
+  transition:
+    opacity min(calc(var(--duration) * 100ms), 500ms)
+      cubic-bezier(0.4, 0, 0.2, 1),
+    transform calc(var(--duration) * 150ms) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.MuiTouchRipple-rippleVisible {
+  animation-duration: calc(var(--duration) * 550ms) !important;
+}
+
+.MuiTouchRipple-childLeaving {
+  animation-duration: min(calc(var(--duration) * 550ms), 550ms) !important;
 }
 
 button {
@@ -22,43 +47,117 @@ button {
   border-radius: 0;
 }
 
-.no-animation {
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
-    animation: none !important;
+img {
+  -webkit-user-drag: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--mui-palette-action-focus, white);
+  border-radius: 8px;
+
+  &:hover {
+    background-color: var(--mui-palette-text-disabled, white);
   }
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background-color: var(--mui-palette-action-hover, black);
+
+  &:hover {
+    background-color: var(--mui-palette-action-focus, black);
+  }
+}
+
+::selection {
+  background-color: var(--mui-palette-primary-main, blue);
+  color: var(--mui-palette-primary-contrastText, white);
 }
 
 .sharp {
   *,
   *::before,
-  *::after {
+  *::after,
+  ::-webkit-scrollbar-thumb {
     border-radius: 0 !important;
   }
-}
 
-.transparent-bg {
-  background-color: transparent;
-  --bg-color: color-mix(
-    in oklch,
-    var(--mui-palette-background-default, #fff),
-    transparent 20%
-  );
+  div[data-tauri-decorum-tb] .original {
+    font-family: 'Segoe MDL2 Assets';
+  }
 }
 
 .blur {
   header[data-tauri-drag-region],
   button.decorum-tb-btn {
-    color: var(--mui-palette-text-disabled, rgba(0, 0, 0, 0.38));
+    color: var(--mui-palette-text-disabled) !important;
   }
 
   header[data-tauri-drag-region] {
-    --mui-palette-action-active: var(
-      --mui-palette-text-disabled,
-      rgba(0, 0, 0, 0.38)
-    );
+    --mui-palette-action-active: var(--mui-palette-text-disabled);
+  }
+}
+
+.advanced-material {
+  .bg(@bgcolor) {
+    background-color: color-mix(in oklch, @bgcolor, transparent 40%);
+    backdrop-filter: saturate(220%) blur(16px);
+  }
+
+  .MuiBackdrop-root:not([aria-hidden]),
+  .MuiDialog-container {
+    backdrop-filter: blur(4px);
+  }
+
+  .MuiDrawer-paper,
+  .MuiPopover-paper,
+  .MuiAutocomplete-paper {
+    .bg(var(--mui-palette-background-paper));
+  }
+
+  .MuiTooltip-tooltip {
+    .bg(var(--mui-palette-Tooltip-bg));
+  }
+
+  .MuiTooltip-arrow {
+    color: color-mix(in oklch, var(--mui-palette-Tooltip-bg), transparent 40%);
+    backdrop-filter: saturate(220%) blur(16px);
+  }
+
+  .MuiSnackbarContent-root {
+    .bg(var(--mui-palette-SnackbarContent-bg));
+  }
+
+  .MuiSnackbar-root {
+    .MuiAlert-colorError {
+      .bg(var(--mui-palette-Alert-errorStandardBg));
+    }
+
+    .MuiAlert-colorInfo {
+      .bg(var(--mui-palette-Alert-infoStandardBg));
+    }
+
+    .MuiAlert-colorSuccess {
+      .bg(var(--mui-palette-Alert-successStandardBg));
+    }
+
+    .MuiAlert-colorWarning {
+      .bg(var(--mui-palette-Alert-warningStandardBg));
+    }
+  }
+
+  .MuiSlider-valueLabel {
+    .bg(var(--mui-palette-grey-600));
+
+    &::before {
+      .bg(var(--mui-palette-grey-600));
+      clip-path: polygon(0 100%, 100% 0, 100% 100%);
+    }
   }
 }
 
@@ -66,6 +165,10 @@ button {
   height: 100vh;
   display: flex;
   flex-direction: column;
+
+  * {
+    font-family: var(--font, sans-serif) !important;
+  }
 }
 
 #client-area {
@@ -78,59 +181,79 @@ input,
 textarea,
 [contenteditable='true'] {
   user-select: text;
+}
 
-  &::selection {
-    background-color: var(--mui-palette-primary-main);
-    color: var(--mui-palette-primary-contrastText);
+html[dir='rtl'].desktop-env div[data-tauri-decorum-tb] {
+  left: 0 !important;
+  right: unset;
+}
+
+.desktop-env {
+  @transition: background calc(var(--duration) * 225ms)
+    cubic-bezier(0.4, 0, 0.2, 1);
+
+  .MuiDrawer-paper {
+    margin-top: calc(var(--title-bar-height) + 8px);
+    height: calc(100% - 16px - var(--title-bar-height));
   }
-}
 
-.simplebar-scrollbar::before {
-  background: var(--mui-palette-text-secondary, rgba(0, 0, 0, 0.6));
-}
+  div[data-tauri-decorum-tb] {
+    width: calc(3 * var(--title-bar-btn-width)) !important;
+    height: var(--title-bar-height) !important;
+    transition:
+      @transition,
+      width calc(var(--duration) * 225ms) step-end;
+    z-index: 10000 !important;
+    left: unset !important;
+    right: 0;
 
-div[data-tauri-decorum-tb] {
-  height: var(--title-bar-height, 48px) !important;
-  transition: background 225ms cubic-bezier(0.4, 0, 0.2, 1);
+    div[data-tauri-drag-region] {
+      max-width: 0;
+    }
+
+    #decorum-tb-close:hover {
+      color: var(--mui-palette-error-contrastText);
+      background-color: color-mix(
+        in oklch,
+        var(--mui-palette-error-main),
+        transparent calc(var(--mui-palette-action-hoverOpacity) * 100%)
+      ) !important;
+    }
+  }
 
   button.decorum-tb-btn {
-    z-index: 10000;
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    color: var(--mui-palette-text-primary);
+    width: var(--title-bar-btn-width);
+    min-width: var(--title-bar-btn-width);
+    height: var(--title-bar-height);
+
+    &[disabled] {
+      color: var(--mui-palette-text-disabled);
+
+      &:hover {
+        background-color: inherit !important;
+      }
+    }
+
+    &:hover {
+      background-color: var(--mui-palette-action-hover) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mui-palette-Chip-defaultBorder);
+    }
   }
 
-  & #decorum-tb-close:hover {
-    color: var(--mui-palette-error-contrastText, #fff);
-    background-color: color-mix(
-      in oklch,
-      var(--mui-palette-error-main, #d32f2f),
-      transparent calc(var(--mui-palette-action-hoverOpacity, 0.04) * 100%)
-    ) !important;
+  body:has(.MuiDialog-backdrop[style*='opacity: 1'])
+    div[data-tauri-decorum-tb] {
+    background: var(--mui-palette-AppBar-defaultBg) !important;
+    width: 100% !important;
+    transition: @transition;
+
+    div[data-tauri-drag-region] {
+      max-width: unset;
+    }
   }
-}
-
-button.decorum-tb-btn {
-  background-color: transparent !important;
-  border-radius: 0 !important;
-  color: var(--mui-palette-text-primary, rgba(0, 0, 0, 0.87));
-  width: var(--title-bar-btn-width, 48px);
-  min-width: var(--title-bar-btn-width, 48px);
-  height: var(--title-bar-height, 40px);
-
-  &:hover {
-    background-color: var(
-      --mui-palette-action-hover,
-      rgba(0, 0, 0, 0.04)
-    ) !important;
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--mui-palette-Chip-defaultBorder, #bdbdbd);
-  }
-}
-
-body:has(.MuiDialog-backdrop) div[data-tauri-decorum-tb] {
-  z-index: 9999 !important;
-}
-
-body:has(.MuiDialog-backdrop[style*='opacity: 1']) div[data-tauri-decorum-tb] {
-  background: var(--mui-palette-AppBar-defaultBg, #f5f5f5) !important;
 }

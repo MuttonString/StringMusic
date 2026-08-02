@@ -1,0 +1,153 @@
+{
+  "common": {
+    "stringMusic": "String 音乐",
+    "noOptions": "无结果",
+    "imageFile": "图像文件",
+    "allFile": "所有文件"
+  },
+  "msg": {
+    "webviewVersionWarning": "系统的 WebView 版本过低，可能造成界面错误。建议升级系统内置浏览器乃至操作系统。",
+    "devtoolFail": "打开开发人员工具失败"
+  },
+  "footer": {
+    "refresh": "刷新",
+    "networkSim": "仿真网络状态",
+    "none": "无仿真",
+    "slow": "慢速",
+    "offline": "脱机",
+    "visionSim": "仿真视觉障碍",
+    "blurred": "视线模糊",
+    "protanopia": "红色盲",
+    "deuteranopia": "绿色盲",
+    "tritanopia": "蓝色盲",
+    "achromatopsia": "全色盲",
+    "devtools": "开发人员工具"
+  },
+  "page": {
+    "home": "主页",
+    "recommendation": "推荐",
+    "recent": "最近播放",
+    "artistCollection": "音乐人收藏",
+    "albumCollection": "专辑收藏",
+    "mvCollection": "MV 收藏",
+    "songCollection": "喜爱的歌曲",
+    "playlistCollection": "歌单收藏",
+    "myPlaylist": "我的歌单"
+  },
+  "drawer": {
+    "download": "下载",
+    "settings": "设置"
+  },
+  "settingsDrawer": {
+    "search": "搜索设置项",
+    "common": {
+      "title": "通用",
+      "autoStart": "开机自动启动",
+      "language": "语言"
+    },
+    "personalization": {
+      "title": "个性化",
+      "colorMode": {
+        "title": "颜色模式",
+        "followSystem": "跟随系统",
+        "light": "亮",
+        "dark": "暗"
+      },
+      "primaryColor": {
+        "title": "主题色",
+        "followSystem": "跟随系统"
+      },
+      "background": {
+        "title": "主窗口背景",
+        "type": {
+          "title": "背景类型",
+          "default": "默认",
+          "translucent": "半透明",
+          "blur": "模糊",
+          "picture": "单张图片",
+          "folder": "随机图片"
+        },
+        "opacity": "不透明度",
+        "blurEffect": {
+          "title": "模糊效果",
+          "blur": "模糊",
+          "acrylic": "亚克力",
+          "mica": "云母"
+        },
+        "picture": "图片",
+        "selectPicture": "选择图片",
+        "folder": "文件夹",
+        "selectFolder": "选择文件夹"
+      },
+      "backgroundMini": {
+        "title": "小窗背景"
+      },
+      "advancedMaterial": "高级材质",
+      "disableRoundCorner": "禁用圆角"
+    },
+    "about": {
+      "title": "关于",
+      "unknown": "未知",
+      "author": "作者",
+      "openSourceLib": "开源代码库",
+      "clickToView": "点击查看",
+      "appVer": "应用程序版本",
+      "tauriVer": "Tauri 版本",
+      "webviewVer": "WebView 版本",
+      "os": "操作系统",
+      "locale": "系统语言"
+    },
+    "developerOptions": {
+      "title": "开发者选项",
+      "enabled": "开启",
+      "forceRTL": "强制从右到左布局",
+      "showFooter": "显示页脚",
+      "script": "启动后 JS 脚本",
+      "warning": "请确保脚本内容可信，以避免被攻击者注入恶意代码！",
+      "openAppdata": "打开应用数据目录",
+      "openLog": "打开应用日志目录",
+      "throwError": "抛出应用程序异常",
+      "crash": "使应用程序崩溃"
+    }
+  },
+  "dialog": {
+    "cancel": "取消",
+    "confirm": "确认"
+  },
+  "langDialog": {
+    "title": "语言管理",
+    "search": "按名称搜索",
+    "followSystem": "跟随系统",
+    "update": "更新",
+    "download": "下载",
+    "builtIn": "内置",
+    "code": "语言代码",
+    "version": "版本",
+    "author": "作者",
+    "desc": "描述"
+  },
+  "colorDialog": {
+    "title": "选取颜色",
+    "new": "新的",
+    "current": "当前",
+    "preview": "预览",
+    "r": "红色",
+    "g": "绿色",
+    "b": "蓝色",
+    "h": "色相",
+    "s": "饱和度",
+    "v": "明度",
+    "hex": "十六进制"
+  },
+  "colorRing": {
+    "custom": "自定义颜色",
+    "red": "红色",
+    "orange": "橙色",
+    "yellow": "黄色",
+    "lime": "青柠色",
+    "green": "绿色",
+    "cyan": "青色",
+    "blue": "蓝色",
+    "purple": "紫色"
+  }
+}

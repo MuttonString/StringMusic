@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 
-export const DEFAULT_COLOR = '#6a9a23';
+export const DEFAULT_COLOR = '#2898bd';
 
 /**
  * 获取操作系统主题色
@@ -26,6 +26,9 @@ export async function listenPrimaryColor(
 ) {
   try {
     const unlisten = await listen('system-accent-changed', (event) => {
+      console.info(
+        `System primary color has been changed to ${event.payload}.`,
+      );
       callback(event.payload as string);
     });
     return unlisten;
@@ -50,7 +53,12 @@ export function isDarkMode() {
 export function listenColorMode(callback: (isDarkMode: boolean) => void) {
   getCurrentWebviewWindow().setTheme(null);
   const media = window.matchMedia('(prefers-color-scheme:dark)');
-  const fn = (e: MediaQueryListEvent) => callback(e.matches);
+  const fn = (e: MediaQueryListEvent) => {
+    console.info(
+      `System color mode has been changed to ${e.matches ? 'dark' : 'light'}.`,
+    );
+    callback(e.matches);
+  };
   media.addEventListener('change', fn);
   return () => media.removeEventListener('change', fn);
 }

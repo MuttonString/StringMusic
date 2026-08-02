@@ -1,4 +1,5 @@
 {
+  "identifier": "com.muttonstring.string-music",
   "app": {
     "windows": [
       {
@@ -14,13 +15,8 @@
         "titleBarStyle": "Overlay",
         "decorations": true
       }
-    ],
-    "security": {
-      "csp": null
-    },
-    "withGlobalTauri": true
+    ]
   },
-  "identifier": "com.muttonstring.string-music",
   "bundle": {
     "resources": {
       "infoplist/": "./"

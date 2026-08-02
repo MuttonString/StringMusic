@@ -1,10 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea with English|简体中文|繁體中文|日本語
-title: "[FEAT] xxx"
+title: '[FEAT] xxx'
 labels: enhancement
 assignees: MuttonString
-
 ---
 
 **Describe 描述**

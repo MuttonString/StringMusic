@@ -6,8 +6,6 @@ import chroma from 'chroma-js';
 import type { MouseEvent, TouchEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useDelayedState from '../../hooks/useDelayedState';
-import useWaitAnimation from '../../hooks/useWaitAnimation';
 import DialogTemplate from '../DialogTemplate';
 import Tip from '../Tip';
 import styles from './index.module.less';
@@ -17,6 +15,8 @@ interface IProps {
   onClose: () => void;
   color: string;
   onColorChanged: (color: string) => void;
+  sharp?: boolean;
+  animationDuration: number;
 }
 
 const PICKER_SIZE = 256;
@@ -29,9 +29,8 @@ const limitRange = (value: string | number, max: number) => {
 };
 
 export default function ColorDialog(props: IProps) {
-  const { open, onClose, color: c, onColorChanged } = props;
-  const [color, isPending] = useDelayedState(c);
-  const delay = useWaitAnimation();
+  const { open, onClose, color, onColorChanged, sharp, animationDuration } =
+    props;
   const { t } = useTranslation();
   const [chromaColor, setChromaColor] = useState(chroma(0));
 
@@ -129,11 +128,13 @@ export default function ColorDialog(props: IProps) {
     <DialogTemplate
       title={t('colorDialog.title')}
       maxWidth='xs'
-      open={open && !isPending}
+      open={open}
       onClose={async () => {
         onClose();
         const initColor = chroma(color);
-        await delay();
+        await new Promise((resolve) =>
+          setTimeout(resolve, 195 * animationDuration),
+        );
         setChromaColor(initColor);
         setHexInput(initColor.hex().slice(1));
       }}
@@ -141,6 +142,7 @@ export default function ColorDialog(props: IProps) {
         onClose();
         onColorChanged(chromaColor.hex());
       }}
+      sharp={sharp}
     >
       {/* 对比度和色相选择器 */}
       <div className={styles.picker}>

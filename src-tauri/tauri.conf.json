@@ -21,11 +21,16 @@
         "minHeight": 400,
         "transparent": true,
         "visible": false,
-        "decorations": false
+        "decorations": false,
+        "scrollBarStyle": "fluentOverlay"
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
     },
     "withGlobalTauri": true
   },

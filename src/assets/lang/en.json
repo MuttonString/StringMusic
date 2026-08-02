@@ -1,0 +1,154 @@
+{
+  "common": {
+    "stringMusic": "String Music",
+    "noOptions": "No results",
+    "imageFile": "Image files",
+    "allFile": "All files"
+  },
+  "msg": {
+    "webviewVersionWarning": "The WebView version of your system is too low, which may cause interface errors. It is recommended to update the built-in browser of your system as well as your operating system.",
+    "devtoolFail": "Failed to open DevTools"
+  },
+  "footer": {
+    "refresh": "Refresh",
+    "networkSim": "Emulate network status",
+    "none": "No emulation",
+    "slow": "Slow",
+    "offline": "Offline",
+    "visionSim": "Emulate vision deficiency",
+    "blurred": "Blurred vision",
+    "protanopia": "Protanopia",
+    "deuteranopia": "Deuteranopia",
+    "tritanopia": "Tritanopia",
+    "achromatopsia": "Achromatopsia",
+    "devtools": "DevTools"
+  },
+  "page": {
+    "home": "Home",
+    "recommendation": "Recommendation",
+    "recent": "Recently Played",
+    "artistCollection": "Artist Collection",
+    "albumCollection": "Album Collection",
+    "mvCollection": "MV Collection",
+    "songCollection": "Favorite Songs",
+    "playlistCollection": "Playlist Collection",
+    "myPlaylist": "My Playlist"
+  },
+  "drawer": {
+    "download": "Downloads",
+    "settings": "Settings"
+  },
+  "settingsDrawer": {
+    "search": "Search settings item",
+    "common": {
+      "title": "Common",
+      "autoStart": "Auto-start on boot",
+      "language": "Language"
+    },
+    "personalization": {
+      "title": "Personalization",
+      "colorMode": {
+        "title": "Color mode",
+        "followSystem": "Follow system",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "primaryColor": {
+        "title": "Primary color",
+        "followSystem": "Follow system"
+      },
+      "background": {
+        "title": "Main window background",
+        "type": {
+          "title": "Background type",
+          "default": "Default",
+          "translucent": "Translucent",
+          "blur": "Blur",
+          "picture": "Single picture",
+          "folder": "Random pictures"
+        },
+        "opacity": "Opacity",
+        "blurEffect": {
+          "title": "Blur effect",
+          "blur": "Blur",
+          "acrylic": "Acrylic",
+          "mica": "Mica"
+        },
+        "picture": "Picture",
+        "selectPicture": "Select picture",
+        "folder": "Folder",
+        "selectFolder": "Select folder"
+      },
+      "backgroundMini": {
+        "title": "Mini window background"
+      },
+      "advancedMaterial": "Advanced mateerial",
+      "disableRoundCorner": "Disable round corner"
+    },
+    "about": {
+      "title": "About",
+      "unknown": "Unknown",
+      "author": "Author",
+      "openSourceLib": "Open source libraries",
+      "clickToView": "Click to view",
+      "appVer": "Application version",
+      "tauriVer": "Tauri version",
+      "webviewVer": "WebView version",
+      "os": "Operating system",
+      "locale": "System language"
+    },
+    "developerOptions": {
+      "title": "Developer options",
+      "enabled": "Enabled",
+      "forceRTL": "Force RTL layout",
+      "showFooter": "Show footer",
+      "script": "Start-up JS script",
+      "warning": "Please ensure that the script content is reliable to prevent attackers from injecting malicious code!",
+      "openAppdata": "Open app data directory",
+      "openLog": "Open app log directory",
+      "throwError": "Throw application error",
+      "crash": "Cause application to crash"
+    }
+  },
+  "dialog": {
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "langDialog": {
+    "title": "Language management",
+    "search": "Search by name",
+    "followSystem": "Follow system",
+    "update": "Update",
+    "download": "Download",
+    "builtIn": "Built-in",
+    "code": "Language code",
+    "version": "Version",
+    "author": "Author",
+    "desc": "Description"
+  },
+  "colorDialog": {
+    "title": "Choose color",
+    "new": "New",
+    "current": "Current",
+    "preview": "Preview",
+    "r": "Red",
+    "g": "Green",
+    "b": "Blue",
+    "h": "Hue",
+    "s": "Saturation",
+    "v": "Value",
+    "hex": "Hex"
+  },
+  "colorRing": {
+    "custom": "Custom color",
+    "red": "Red",
+    "orange": "Orange",
+    "yellow": "Yellow",
+    "lime": "Lime",
+    "green": "Green",
+    "cyan": "Cyan",
+    "blue": "Blue",
+    "purple": "Purple",
+    "pink": "Pink"
+  }
+}
