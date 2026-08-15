@@ -1,0 +1,91 @@
+.lose-focus {
+  header[data-tauri-drag-region],
+  button.decorum-tb-btn {
+    color: var(--mui-palette-text-disabled) !important;
+  }
+
+  header[data-tauri-drag-region] {
+    --mui-palette-action-active: var(--mui-palette-text-disabled);
+  }
+}
+
+.desktop {
+  .MuiDrawer-paper {
+    margin-top: calc(var(--title-bar-height) + 8px);
+    height: calc(100% - 16px - var(--title-bar-height));
+  }
+
+  div[data-tauri-decorum-tb] {
+    height: var(--title-bar-height) !important;
+    transition: background calc(var(--duration) * 225ms)
+      cubic-bezier(0.4, 0, 0.2, 1);
+
+    #decorum-tb-close:hover {
+      color: var(--mui-palette-error-contrastText, white);
+      background-color: rgb(
+        var(--mui-palette-error-mainChannel, 255 0 0) /
+          calc(100 - var(--mui-palette-action-hoverOpacity, 0))
+      ) !important;
+    }
+  }
+
+  button.decorum-tb-btn {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    color: var(--mui-palette-text-primary, white);
+    width: var(--title-bar-btn-width);
+    min-width: var(--title-bar-btn-width);
+    height: var(--title-bar-height);
+
+    &[disabled] {
+      color: var(--mui-palette-text-disabled, gray);
+
+      &:hover {
+        background-color: inherit !important;
+      }
+    }
+
+    &:hover {
+      background-color: var(--mui-palette-action-hover, white) !important;
+      color: var(--mui-palette-text-primary, black);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--mui-palette-Chip-defaultBorder, gray);
+    }
+  }
+
+  body:has(.MuiBackdrop-root:not([style*='visibility: hidden']))
+    div[data-tauri-decorum-tb] {
+    z-index: 10000 !important;
+  }
+
+  // 打开弹窗时标题栏不透明
+  body:has(.MuiDialog-backdrop[style*='opacity: 1'])
+    div[data-tauri-decorum-tb] {
+    background: var(--mui-palette-AppBar-defaultBg) !important;
+  }
+}
+
+.PrivateSwipeArea-root {
+  top: var(--title-bar-height) !important;
+
+  @media (width >= 50rem) {
+    display: none;
+  }
+
+  #root:has(> footer) & {
+    bottom: 2rem !important;
+  }
+}
+
+// 交换Snackbar的亮和暗主题下的默认颜色
+body {
+  @media (prefers-color-scheme: dark) {
+    --mui-palette-SnackbarContent-bg: rgb(50, 50, 50);
+    --mui-palette-SnackbarContent-color: #fff;
+  }
+
+  --mui-palette-SnackbarContent-bg: rgb(250, 250, 250);
+  --mui-palette-SnackbarContent-color: rgba(0, 0, 0, 0.87);
+}

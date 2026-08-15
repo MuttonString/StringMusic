@@ -1,40 +1,42 @@
-# String Music
+# String 音乐
 
-English | [中文](README_zh.md)
+一个现代风格的音乐播放器，基于 [Tauri](https://tauri.app/start/)，支持在线音乐。可添加自定义的在线音乐源。
 
-A modern style music player based on [Tauri](https://tauri.app/start/) that supports online music. You can add custom online music sources.
-
-- Online music source path: `./api/*.json`
-- Language path: `./lang/*.json`
-
-## Features
+## 特性
 
 todo
 
-## Installtion
+## 安装
 
-Download from [Releases](https://github.com/MuttonString/string-music/releases)
+从 [Releases](https://github.com/MuttonString/string-music/releases) 下载
 
-| OS      | Architecture          | File          |
-| ------- | --------------------- | ------------- |
-| Windows | x64 / ARM64           | `.exe`        |
-| macOS   | Apple Silicon / Intel | `.dmg`        |
-| Linux   | x64 / ARM64           | `.deb` `.rpm` |
+| 操作系统 | 架构                  | 文件          |
+| -------- | --------------------- | ------------- |
+| Windows  | x64 / ARM64           | `.exe`        |
+| macOS    | Apple Silicon / Intel | `.dmg`        |
+| Linux    | x64 / ARM64           | `.deb` `.rpm` |
 
-## Develop
+## 开发
 
-Develop dependencies: <https://tauri.app/start/prerequisites/>
-You should commit your Pull Request to **dev** branch.
+开发依赖：<https://tauri.app/start/prerequisites/>
+应将 Pull Request 提交到 **dev** 分支。
 
-Switch the path to the project directory.
-For the first time, you shuold run:
+将路径切换到项目目录下。
+首次需运行：
 
 ```bash
 npm i
 ```
 
-Then run:
+然后运行：
 
 ```bash
 npm run tauri dev
 ```
+
+双击“设置 - 关于 - 应用程序版本”可启用开发者选项
+
+## 资源文件
+
+包括语言、在线音乐源。若想创建和上传自己的资源文件，参照：
+<https://github.com/MuttonString/StringMusicResource>

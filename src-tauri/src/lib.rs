@@ -1,20 +1,45 @@
+use std::env;
 use std::panic;
-use tauri::{Manager, RunEvent};
-use tauri_plugin_decorum::WebviewWindowExt;
+use std::sync::Mutex;
+use tauri::{Emitter, Manager, RunEvent};
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri_plugin_log::{Target, TargetKind, log};
 
-use crate::color::setup_accent_color_listener;
-mod color;
 mod dev_op;
+mod font;
+mod media_control;
+mod open;
 mod webview_ver;
+
+#[cfg(target_os = "windows")]
+mod taskbar;
+
+#[cfg(desktop)]
+mod titlebar;
+#[derive(Default)]
+struct AppState {
+    opened_file: Mutex<Option<String>>,
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let args: Vec<String> = env::args_os()
+        .map(|os| os.into_string().unwrap_or_else(|_| "".to_string()))
+        .collect();
+    let initial_file = args.get(1).cloned();
+
     let mut builder = tauri::Builder::default()
+        .manage(AppState {
+            opened_file: Mutex::new(initial_file),
+        })
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .plugin(tauri_plugin_fs::init());
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_prevent_default::init());
 
     #[cfg(desktop)]
     {
@@ -54,7 +79,7 @@ pub fn run() {
         }
     }
 
-    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    #[cfg(any(target_os = "android", target_os = "ios"))]
     {
         builder = builder.plugin(tauri_plugin_backpressed::init());
     }
@@ -80,19 +105,22 @@ pub fn run() {
                 })
                 .build(),
         )
-        .plugin(tauri_plugin_store::Builder::new().build())
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_prevent_default::init())
         .setup(|app| {
+            log::info!("----------");
+
             let app_handle = app.handle().clone();
             let app_handle_panic = app_handle.clone();
             let main_window = app.get_webview_window("main").unwrap();
 
-            log::info!("Starting app...");
+            let state = app_handle.state::<AppState>();
+            if let Some(path) = state.opened_file.lock().unwrap().clone() {
+                log::info!("Starting app with path \"{}\"", path);
+                app.emit("opened", path).unwrap();
+            } else {
+                log::info!("Starting app...");
+            }
+
             log::info!("App version: {}", app.package_info().version);
-            log::info!("Tauri version: {}", tauri::VERSION);
             log::info!(
                 "Webview version: {}",
                 wry::webview_version().unwrap_or_else(|_| "unknown".to_string())
@@ -108,21 +136,18 @@ pub fn run() {
                 tauri_plugin_os::locale().unwrap_or_else(|| "unknown".to_string())
             );
 
-            setup_accent_color_listener(app_handle);
-
             #[cfg(desktop)]
-            {
-                main_window.create_overlay_titlebar().unwrap();
+            titlebar::create_titlebar(main_window.clone());
 
-                #[cfg(target_os = "macos")]
-                {
-                    main_window.make_transparent().unwrap();
-                }
-            }
+            media_control::init_media_control(app_handle);
 
+            // 捕获panic
             panic::set_hook(Box::new(move |panic_info| {
                 let loc = panic_info.location().unwrap();
-                let msg = panic_info.payload().downcast_ref::<&str>().map_or("Unknown", |v| v);
+                let msg = panic_info
+                    .payload()
+                    .downcast_ref::<&str>()
+                    .map_or("Unknown error", |v| v);
                 let message = format!("{}:{} {}", loc.file(), loc.line(), msg);
                 log::error!("{}", message);
                 app_handle_panic
@@ -135,18 +160,37 @@ pub fn run() {
 
             Ok(())
         })
+        .manage(open::OpenedUrls(Mutex::new(vec![])))
         .invoke_handler(tauri::generate_handler![
             webview_ver::webview_ver,
-            color::get_accent_color,
             dev_op::open_devtools,
             dev_op::crash,
+            font::get_system_fonts,
+            open::opened_urls,
+            media_control::set_metadata,
+            media_control::set_playback,
+            #[cfg(desktop)]
+            titlebar::create_titlebar,
+            #[cfg(target_os = "windows")]
+            taskbar::update_buttons,
+            #[cfg(target_os = "windows")]
+            taskbar::init_taskbar_buttons,
         ])
         .build(tauri::generate_context!())
-        .expect("error while running tauri application")
-        .run(|_, event| {
+        .expect("Error while running tauri application.")
+        .run(|_app, event| {
             // 由于 https://github.com/tauri-apps/tauri/issues/9198 ，统一采用Exit而非ExitRequested
             if let RunEvent::Exit { .. } = event {
-                log::info!("App exited.\n");
+                log::info!("App exited.");
+            }
+            #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+            if let RunEvent::Opened { urls } = event {
+                _app.state::<open::OpenedUrls>()
+                    .0
+                    .lock()
+                    .unwrap()
+                    .extend(urls.clone());
+                _app.emit("opened", urls).unwrap();
             }
         });
 }

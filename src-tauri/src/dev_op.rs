@@ -1,9 +1,11 @@
-#[tauri::command]
-pub fn open_devtools(window: tauri::WebviewWindow) {
-    let _ = window.open_devtools();
-}
+use tauri::{WebviewWindow, command};
 
-#[tauri::command]
+#[command]
 pub fn crash() {
     panic!("(╯°Д°)╯ ┻━┻");
+}
+
+#[command]
+pub fn open_devtools(window: WebviewWindow) {
+    let _ = window.open_devtools();
 }

@@ -18,25 +18,35 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2.11.0", features = ["protocol-asset", "macos-private-api", "devtools"] }
+tauri = { version = "2", features = ["protocol-asset", "macos-private-api", "devtools", "tray-icon"] }
+tauri-plugin-fs = { version = "2", features = ["watch"] }
 tauri-plugin-opener = "2"
 tauri-plugin-prevent-default = "5"
-tauri-plugin-decorum = "1.1.1"
+tauri-plugin-decorum = "1"
 tauri-plugin-os = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-process = "2"
-tauri-plugin-backpressed = "0.1.0"
+tauri-plugin-backpressed = "0.1"
 tauri-plugin-store = "2"
 tauri-plugin-log = "2"
-tauri-plugin-fs = { version = "2.0.0", features = ["watch"] }
-mundy = { version = "0.2", features = ["accent-color"] }
+serde = { version = "1", features = ["derive"] }
 wry = "0.55"
-futures = "0.3"
 log = "0.4"
 chrono = "0.4"
+font-kit = "0.14"
+ttf-parser = "0.25"
+souvlaki = "0.8" 
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"
-tauri-plugin-global-shortcut = "2"
 tauri-plugin-single-instance = "2"
 tauri-plugin-window-state = "2"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = [
+  "Win32_Foundation",
+  "Win32_System_Com",
+  "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+  "Win32_Graphics_Dwm",
+] }

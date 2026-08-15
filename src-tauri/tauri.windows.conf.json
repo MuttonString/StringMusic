@@ -1,0 +1,8 @@
+{
+  "identifier": "com.muttonstring.string-music",
+  "bundle": {
+    "resources": {
+      "taskbar-icons/*": "./"
+    }
+  }
+}

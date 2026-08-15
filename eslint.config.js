@@ -1,5 +1,6 @@
 import eslintPluginTypeScript from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import compat from 'eslint-plugin-compat';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 
@@ -49,5 +50,11 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
   },
+  compat.configs['flat/recommended'],
 ];

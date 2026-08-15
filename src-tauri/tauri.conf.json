@@ -21,8 +21,18 @@
         "minHeight": 400,
         "transparent": true,
         "visible": false,
-        "decorations": false,
-        "scrollBarStyle": "fluentOverlay"
+        "decorations": false
+      },
+      {
+        "label": "mini",
+        "title": "Mini Window",
+        "create": false
+      },
+      {
+        "label": "lyric",
+        "title": "Desktop lyric",
+        "dragDropEnabled": false,
+        "create": false
       }
     ],
     "security": {
@@ -78,6 +88,71 @@
       "icons/512x512@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "fileAssociations": [
+      {
+        "ext": ["mp3"],
+        "mimeType": "audio/mp3",
+        "name": "MP3",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["flac"],
+        "mimeType": "audio/flac",
+        "name": "FLAC",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["aac"],
+        "mimeType": "audio/aac",
+        "name": "ADTS",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["wav"],
+        "mimeType": "audio/wav",
+        "name": "WAV",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["oga", "ogg"],
+        "mimeType": "audio/ogg",
+        "name": "Ogg",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["mp4", "m4a"],
+        "mimeType": "audio/mp4",
+        "name": "MP4",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["webm"],
+        "mimeType": "audio/webm",
+        "name": "WebM",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["mpg", "mpeg"],
+        "mimeType": "audio/mpeg",
+        "name": "MPEG",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      },
+      {
+        "ext": ["3gp"],
+        "mimeType": "audio/3gpp",
+        "name": "3GP",
+        "role": "Viewer",
+        "androidIntentActionFilters": ["view"]
+      }
     ]
   }
 }

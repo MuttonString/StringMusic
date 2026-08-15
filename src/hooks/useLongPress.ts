@@ -2,7 +2,7 @@ import type { MouseEvent, MouseEventHandler } from 'react';
 import { useRef } from 'react';
 
 /**
- * 处理鼠标长按事件，通常将该hook返回值直接传递给对应组件即可。
+ * 处理长按事件，通常将该hook返回值直接传递给对应组件即可。
  */
 export default function useLongPress(
   onLongPress: MouseEventHandler,
@@ -12,7 +12,7 @@ export default function useLongPress(
   const timerRef = useRef<number>(null);
   const longPressTriggeredRef = useRef(false);
 
-  const onMouseDown = (e: MouseEvent) => {
+  const onPointerDown = (e: MouseEvent) => {
     if (e.button !== 0) return;
     longPressTriggeredRef.current = false;
     timerRef.current = setTimeout(() => {
@@ -21,7 +21,7 @@ export default function useLongPress(
     }, threshold);
   };
 
-  const onMouseUp = (e: MouseEvent) => {
+  const onPointerUp = (e: MouseEvent) => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
@@ -31,12 +31,17 @@ export default function useLongPress(
     }
   };
 
-  const onMouseLeave = () => {
+  const onPointerLeave = () => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
   };
 
-  return { onMouseDown, onMouseUp, onMouseLeave, onContextMenu: onLongPress };
+  return {
+    onPointerDown,
+    onPointerUp,
+    onPointerLeave,
+    onContextMenu: onLongPress,
+  };
 }

@@ -1,90 +1,8 @@
+import { invoke } from '@tauri-apps/api/core';
 import { type } from '@tauri-apps/plugin-os';
-
-const os = type();
-const isMac = ['macos', 'ios'].includes(os);
-
-// 禁用DevTools快捷键
-window.addEventListener(
-  'keydown',
-  (e) => {
-    if (e.primaryKey && e.shiftKey && e.code === 'KeyI') {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-
-    if (e.key === 'F12') {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-  },
-  true,
-);
-
-Object.defineProperty(KeyboardEvent.prototype, 'primaryKey', {
-  get(this) {
-    return isMac ? this.metaKey : this.ctrlKey;
-  },
-});
-
-export const enum KeyCode {
-  Up = 'ArrowUp',
-  Down = 'ArrowDown',
-  Left = 'ArrowLeft',
-  Right = 'ArrowRight',
-  PgUp = 'PageUp',
-  PgDown = 'PageDown',
-  Home = 'Home',
-  End = 'End',
-  Enter = 'Enter',
-  Alt = 'Alt',
-  Ctrl = 'Control',
-  Shift = 'Shift',
-  Meta = 'Meta',
-  Space = ' ',
-  Tab = 'Tab',
-  Esc = 'Escape',
-  Del = 'Delete',
-  Backspace = 'Backspace',
-}
-
-/**
- * 删除键，在Mac下改为Backspace
- */
-export const DELETE_KEY = isMac ? KeyCode.Backspace : KeyCode.Del;
-
-/**
- * 主修饰键，在Windows/Linux下为Ctrl，在Mac下为Cmd
- */
-export const PRIMARY_MODIFIER_KEY = isMac ? KeyCode.Meta : KeyCode.Ctrl;
-
-const KEY_ABBR: Record<string, string> = {
-  [KeyCode.Up]: '↑',
-  [KeyCode.Down]: '↓',
-  [KeyCode.Left]: '←',
-  [KeyCode.Right]: '→',
-  [KeyCode.Ctrl]: 'Ctrl',
-  [KeyCode.Del]: 'Del',
-  [KeyCode.Esc]: 'Esc',
-  [KeyCode.PgUp]: 'PgUp',
-  [KeyCode.PgDown]: 'PgDn',
-} as const;
-
-const KEY_MAC: Record<string, string> = {
-  [KeyCode.Ctrl]: '⌃',
-  [KeyCode.Alt]: '⌥',
-  [KeyCode.Shift]: '⇧',
-  [KeyCode.Meta]: '⌘',
-  [KeyCode.Esc]: '⎋',
-  [KeyCode.Tab]: '⇥',
-  [KeyCode.Backspace]: '⌫',
-  [KeyCode.Enter]: '⏎',
-  [KeyCode.Up]: '▲',
-  [KeyCode.Down]: '▼',
-  [KeyCode.Left]: '◀',
-  [KeyCode.Right]: '▶',
-} as const;
+import { KEY_ABBR, KEY_MAC } from '../constants/keys';
+import { IS_APPLE } from '../constants/os';
+import { KeyCode } from '../types/keyCode';
 
 /**
  * 展示包含空格和括号的快捷键描述，非Mac系统的多个键之间自动拼接加号，修饰键的描述因系统而异
@@ -93,7 +11,7 @@ const KEY_MAC: Record<string, string> = {
  * @returns 如“粘贴 (Ctrl+V)”“粘贴 ⌘V”格式的文本
  */
 export function showShortcutKey(text: string, ...keys: string[]) {
-  if (isMac) {
+  if (IS_APPLE) {
     return `${text}${text ? ' ' : ''}${keys
       .map((key) => {
         return KEY_MAC[key] || key;
@@ -104,9 +22,17 @@ export function showShortcutKey(text: string, ...keys: string[]) {
   return `${text}${text ? ' ' : ''}(${keys
     .map((key) => {
       if (key === KeyCode.Meta) {
-        return os === 'windows' ? 'Win' : 'Super';
+        return type() === 'windows' ? 'Win' : 'Super';
       }
       return KEY_ABBR[key] || key;
     })
     .join('+')})`;
+}
+
+export function listenDevKey(e: KeyboardEvent) {
+  if ((e.primaryKey && e.shiftKey && e.code === 'KeyI') || e.key === 'F12') {
+    invoke('open_devtools');
+  } else if ((e.primaryKey && e.code === 'KeyR') || e.key === 'F5') {
+    location.reload();
+  }
 }

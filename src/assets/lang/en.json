@@ -53,10 +53,7 @@
         "light": "Light",
         "dark": "Dark"
       },
-      "primaryColor": {
-        "title": "Primary color",
-        "followSystem": "Follow system"
-      },
+      "primaryColor": "Primary color",
       "background": {
         "title": "Main window background",
         "type": {
@@ -82,7 +79,7 @@
       "backgroundMini": {
         "title": "Mini window background"
       },
-      "advancedMaterial": "Advanced mateerial",
+      "advancedMaterial": "Advanced material",
       "disableRoundCorner": "Disable round corner"
     },
     "about": {

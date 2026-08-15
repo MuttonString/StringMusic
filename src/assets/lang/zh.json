@@ -53,10 +53,7 @@
         "light": "亮",
         "dark": "暗"
       },
-      "primaryColor": {
-        "title": "主题色",
-        "followSystem": "跟随系统"
-      },
+      "primaryColor": "主题色",
       "background": {
         "title": "主窗口背景",
         "type": {

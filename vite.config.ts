@@ -1,18 +1,24 @@
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import autoprefixer from 'autoprefixer';
 import { defineConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
 
-// @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), svgr({ svgrOptions: { svgo: false } })],
+  plugins: [react(), svgr({ svgrOptions: { svgo: false } }), tailwindcss()],
   build: {
     rollupOptions: {
       input: {
         main: 'index.html',
       },
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [autoprefixer()],
     },
   },
 
@@ -43,8 +49,8 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/_https?:\/\/[^/]+/, ''),
         configure: (proxy, options) => {
-          // @ts-ignore
           proxy.on('proxyReq', (_, req) => {
+            // @ts-expect-error
             const target = req.originalUrl.match(/^\/_(https?:\/\/[^/]+)/)[1];
             options.target = target;
           });
