@@ -1,5 +1,7 @@
 export const enum BackendEvent {
   ConfigChanged = 'config-changed',
+  Opened = 'opened', // 仅在macOS, iOS, Android有效
+  Reopen = 'reopen', // 仅在macOS有效
   Play = 'play',
   CanPlay = 'can-play',
   Pause = 'pause',

@@ -183,14 +183,20 @@ pub fn run() {
             if let RunEvent::Exit { .. } = event {
                 log::info!("App exited.");
             }
+
             #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
-            if let RunEvent::Opened { urls } = event {
+            if let RunEvent::Opened { ref urls } = event {
                 _app.state::<open::OpenedUrls>()
                     .0
                     .lock()
                     .unwrap()
                     .extend(urls.clone());
                 _app.emit("opened", urls).unwrap();
+            }
+
+            #[cfg(target_os = "macos")]
+            if let RunEvent::Reopen { .. } = event {
+                _app.emit("reopen", ()).unwrap();
             }
         });
 }

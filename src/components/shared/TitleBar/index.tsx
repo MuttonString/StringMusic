@@ -15,7 +15,11 @@ import AppIcon from '../../../assets/icon.svg?react';
 import { BASE_COMPONENT } from '../../../constants/animation';
 import { PRIMARY_MODIFIER_KEY } from '../../../constants/keys';
 import { IS_APPLE, IS_DESKTOP } from '../../../constants/os';
-import { MD_WIDTH, SIDE_BAR_WIDTH } from '../../../constants/window';
+import {
+  MAIN_WINDOW,
+  MD_WIDTH,
+  SIDE_BAR_WIDTH,
+} from '../../../constants/window';
 import useWidthQuery from '../../../hooks/useWidthQuery';
 import { useConfig } from '../../../providers/ConfigProvider';
 import { useNavigator } from '../../../providers/NavigatorProvider';
@@ -30,6 +34,7 @@ const isNewSegoeSupported = type() === 'windows' && parseInt(version()) >= 10;
 export default function TitleBar() {
   const [config] = useConfig();
   const wide = useWidthQuery(MD_WIDTH);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const { goBack, goForward, canGoBack, canGoForward } = useNavigator();
   const { t } = useTranslation();
   const sharp = config.sharpStyle;
@@ -55,6 +60,17 @@ export default function TitleBar() {
     }
   }, [wide]);
 
+  useEffect(() => {
+    if (!IS_APPLE) return;
+    const unlisten = MAIN_WINDOW.onResized(async () =>
+      setIsFullScreen(await MAIN_WINDOW.isFullscreen()),
+    );
+
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
   return (
     <header
       data-tauri-drag-region
@@ -70,6 +86,9 @@ export default function TitleBar() {
             whileInView='visible'
             exit='hidden'
             className='overflow-clip flex items-center gap-2 pointer-events-none whitespace-nowrap'
+            style={
+              !IS_APPLE || isFullScreen ? undefined : { visibility: 'hidden' }
+            }
           >
             <AppIcon className='min-w-6 h-6' />
             <span>{t('common.stringMusic')}</span>
@@ -95,7 +114,7 @@ export default function TitleBar() {
           <Tip title={t('titleBar.navigator')}>
             <IconButton
               size='small'
-              className='ms-1!'
+              className={IS_APPLE ? 'ms-18!' : 'ms-1!'}
               onClick={() => setNavigatorOpen(true)}
             >
               <MaterialIcon name='menu' />
@@ -216,7 +235,6 @@ export default function TitleBar() {
           </IconButton>
         </Tip>
       </div>
-
       <div
         data-tauri-drag-region
         className={classnames(

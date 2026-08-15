@@ -3,6 +3,7 @@ import { join } from '@tauri-apps/api/path';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { Effect } from '@tauri-apps/api/window';
 import { exists, readDir } from '@tauri-apps/plugin-fs';
+import { type } from '@tauri-apps/plugin-os';
 import bg from '../assets/bg.webp';
 import { MAIN_WINDOW, WINDOW_LABEL } from '../constants/window';
 import type { AppConfig } from '../types/config';
@@ -22,7 +23,9 @@ export const applyConfigFnMap: {
     setTimeout(() =>
       setLang(value).then(() => {
         if (WINDOW_LABEL === 'main')
-          MAIN_WINDOW.show().then(() => invoke('init_taskbar_buttons'));
+          MAIN_WINDOW.show().then(() => {
+            if (type() === 'windows') invoke('init_taskbar_buttons');
+          });
       }),
     );
   },

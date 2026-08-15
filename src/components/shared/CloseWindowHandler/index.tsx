@@ -1,12 +1,14 @@
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IS_APPLE, IS_DESKTOP } from '../../../constants/os';
 import { WINDOW_LABEL } from '../../../constants/window';
 import { useConfig } from '../../../providers/ConfigProvider';
+import { BackendEvent } from '../../../types/backend';
 import { CloseWindowAction } from '../../../types/config';
 import { destroyAll } from '../../../utils/window';
 import DialogTemplate from '../../ui/DialogTemplate';
@@ -23,12 +25,17 @@ export default function CloseWindowHandler() {
     if (!IS_DESKTOP) return;
 
     if (IS_APPLE) {
-      const unlisten = appWindow.onCloseRequested((e) => {
+      const unlistenClose = appWindow.onCloseRequested((e) => {
         e.preventDefault();
         appWindow.hide();
       });
+      const unlistenReopen = listen(BackendEvent.Reopen, () =>
+        appWindow.show(),
+      );
+
       return () => {
-        unlisten.then((fn) => fn());
+        unlistenClose.then((fn) => fn());
+        unlistenReopen.then((fn) => fn());
       };
     }
 

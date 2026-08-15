@@ -33,8 +33,7 @@ serde = { version = "1", features = ["derive"] }
 wry = "0.55"
 log = "0.4"
 chrono = "0.4"
-font-kit = "0.14"
-ttf-parser = "0.25"
+fontdb = "0.24"
 souvlaki = "0.8" 
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
