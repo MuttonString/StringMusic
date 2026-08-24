@@ -25,11 +25,13 @@ import { useConfig } from '../../../providers/ConfigProvider';
 import { useNavigator } from '../../../providers/NavigatorProvider';
 import { KeyCode } from '../../../types/keyCode';
 import { showShortcutKey } from '../../../utils/shortcutKey';
+import { compareVersion } from '../../../utils/version';
 import MaterialIcon from '../../ui/MaterialIcon';
 import Tip from '../../ui/Tip';
 import NavigatorList from '../NavigatorList';
 
-const isNewSegoeSupported = type() === 'windows' && parseInt(version()) >= 10;
+const isNewSegoeSupported =
+  type() === 'windows' && compareVersion(version(), '10.0.21327') >= 0;
 
 export default function TitleBar() {
   const [config] = useConfig();

@@ -1,11 +1,10 @@
-import { convertFileSrc, invoke } from '@tauri-apps/api/core';
+import { convertFileSrc } from '@tauri-apps/api/core';
 import { join } from '@tauri-apps/api/path';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { Effect } from '@tauri-apps/api/window';
 import { exists, readDir } from '@tauri-apps/plugin-fs';
-import { type } from '@tauri-apps/plugin-os';
 import bg from '../assets/bg.webp';
-import { MAIN_WINDOW, WINDOW_LABEL } from '../constants/window';
+import { WINDOW_LABEL } from '../constants/window';
 import type { AppConfig } from '../types/config';
 import { BackgroundType, ColorMode } from '../types/config';
 import { listenDevKey } from '../utils/shortcutKey';
@@ -20,14 +19,10 @@ export const applyConfigFnMap: {
   [key in keyof AppConfig]?: (value: AppConfig[key]) => void;
 } = {
   language(value) {
-    setTimeout(() =>
-      setLang(value).then(() => {
-        if (WINDOW_LABEL === 'main')
-          MAIN_WINDOW.show().then(() => {
-            if (type() === 'windows') invoke('init_taskbar_buttons');
-          });
-      }),
-    );
+    setTimeout(async () => {
+      await setLang(value);
+      document.body.style.display = '';
+    });
   },
 
   colorMode(value) {
@@ -51,7 +46,7 @@ export const applyConfigFnMap: {
       style.backgroundColor = `rgb(var(--mui-palette-AppBar-defaultBgChannel) / ${opacity}%)`;
       style.setProperty(
         '--bg-color',
-        `rgb(var(--mui-palette-background-defaultChannel) / ${Math.pow(opacity / 100, 5)})`,
+        `rgb(var(--mui-palette-background-defaultChannel) / ${(opacity / 100) ** 5})`,
       );
       appWindow.clearEffects();
     };

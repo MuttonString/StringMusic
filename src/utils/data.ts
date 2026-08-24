@@ -39,3 +39,42 @@ export function decompress(base64: string) {
   const decompressed = decompressSync(strToU8(atob(base64), true));
   return JSON.parse(strFromU8(decompressed));
 }
+
+/**
+ * 将图片src转换为正方形的PNG格式的ArrayBuffer
+ */
+export function imgSrcToBuffer(src: string, size: number) {
+  const img = document.createElement('img');
+  img.crossOrigin = 'anonymous';
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  return new Promise<ArrayBuffer>((resolve, reject) => {
+    img.onload = () => {
+      if (!ctx) return reject();
+
+      const imgSize = Math.max(img.naturalWidth, img.naturalHeight);
+      size = Math.min(size, imgSize);
+      canvas.width = size;
+      canvas.height = size;
+      const scale = Math.min(size / imgSize, 1);
+
+      ctx.drawImage(
+        img,
+        (size - img.naturalWidth * scale) / 2,
+        (size - img.naturalHeight * scale) / 2,
+        size,
+        size,
+      );
+      canvas.toBlob(async (blob) => {
+        if (!blob) return reject();
+
+        const arrayBuffer = await blob.arrayBuffer();
+        resolve(arrayBuffer);
+      }, 'image/png');
+    };
+
+    img.onerror = reject;
+    img.src = src;
+  });
+}

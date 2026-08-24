@@ -87,7 +87,11 @@ export default function DevOptions({ refs }: RefsProp) {
               className='[&_textarea]:font-mono!'
               value={script}
               onChange={(e) => setScript(e.target.value)}
-              onBlur={() => updateConfig({ script: compress(script) })}
+              onBlur={() =>
+                updateConfig({
+                  script: script.trim() ? compress(script) : '',
+                })
+              }
             />
             <FormHelperText className='text-warning!'>
               {t('config.scriptWarning')}

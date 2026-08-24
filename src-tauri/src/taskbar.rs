@@ -1,10 +1,8 @@
-use std::sync::Mutex;
-use std::sync::atomic::{AtomicU32, Ordering};
-
 use serde::Deserialize;
+use std::sync::Mutex;
 use tauri::path::PathResolver;
-use tauri::{AppHandle, Emitter, Manager, Runtime, WebviewWindow, path::BaseDirectory};
-use tauri::{EventLoopMessage, State, Window, Wry, command};
+use tauri::{AppHandle, Emitter, Manager, WebviewWindow, path::BaseDirectory};
+use tauri::{State, Wry, command};
 use windows::Win32::Foundation::{HWND, LPARAM, LRESULT, WPARAM};
 use windows::Win32::System::Com::{CLSCTX_INPROC_SERVER, CoCreateInstance};
 use windows::Win32::UI::Shell::THBF_DISABLED;
@@ -13,8 +11,7 @@ use windows::Win32::UI::Shell::{
     THB_TOOLTIP, THBF_ENABLED, THBN_CLICKED, THUMBBUTTON, TaskbarList,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    DestroyIcon, HICON, IMAGE_ICON, LR_DEFAULTSIZE, LR_LOADFROMFILE, LoadImageW, PostMessageW,
-    RegisterWindowMessageW, WM_COMMAND, WM_NCDESTROY, WM_USER,
+    DestroyIcon, HICON, IMAGE_ICON, LR_DEFAULTSIZE, LR_LOADFROMFILE, LoadImageW, WM_COMMAND,
 };
 use windows::core::PCWSTR;
 
@@ -143,7 +140,7 @@ impl ThumbnailManager {
                 iId: BTN_TOGGLE,
                 hIcon: load_icon(resolver, "play_disabled.ico").unwrap(),
                 szTip: [0; 260],
-                dwFlags: THBF_ENABLED,
+                dwFlags: THBF_DISABLED,
                 ..Default::default()
             },
             THUMBBUTTON {
@@ -197,6 +194,7 @@ impl ThumbnailManager {
         for update in updates {
             let index = (update.id - BTN_PREV) as usize;
             let mut btn = self.buttons[index];
+
             if let Some(tip) = update.tooltip {
                 let mut count = 0;
                 for (idx, code_unit) in tip.encode_utf16().enumerate().take(259) {
@@ -208,6 +206,7 @@ impl ThumbnailManager {
                 }
                 btn.dwMask |= THB_TOOLTIP;
             }
+
             if let Some(enabled) = update.enabled {
                 btn.dwFlags = if enabled { THBF_ENABLED } else { THBF_DISABLED };
                 btn.dwMask |= THB_FLAGS;
@@ -215,21 +214,21 @@ impl ThumbnailManager {
                 let new_icon = load_icon(
                     app_handle.path(),
                     if enabled {
-                        if index == 2
+                        if index == 1
                             && let Some(paused) = update.paused
                         {
-                            if paused { "pause.ico" } else { "play.ico" }
+                            if paused { "play.ico" } else { "pause.ico" }
                         } else {
                             ICON_NAME[index]
                         }
                     } else {
-                        if index == 2
+                        if index == 1
                             && let Some(paused) = update.paused
                         {
                             if paused {
-                                "pause_disabled.ico"
-                            } else {
                                 "play_disabled.ico"
+                            } else {
+                                "pause_disabled.ico"
                             }
                         } else {
                             ICON_NAME_DISABLED[index]
@@ -238,17 +237,16 @@ impl ThumbnailManager {
                 )
                 .unwrap();
 
-                unsafe {
-                    let _ = DestroyIcon(self.icon_handles[index]);
-                    self.taskbar
-                        .ThumbBarUpdateButtons(hwnd, &self.buttons)
-                        .map_err(|e| e.to_string())?;
-                    self.icon_handles[index] = new_icon;
+                let _ = unsafe { DestroyIcon(self.icon_handles[index]) };
+                self.icon_handles[index] = new_icon;
+                btn.hIcon = new_icon;
+            }
 
-                    self.taskbar
-                        .ThumbBarUpdateButtons(hwnd, &self.buttons)
-                        .map_err(|e| e.to_string())?;
-                }
+            unsafe {
+                self.buttons[index] = btn;
+                self.taskbar
+                    .ThumbBarUpdateButtons(hwnd, &self.buttons)
+                    .map_err(|e| e.to_string())?;
             }
         }
 
@@ -278,10 +276,9 @@ pub fn update_buttons(
 }
 
 #[command]
-pub fn init_taskbar_buttons(app_handle: AppHandle) -> Result<(), String> {
+pub fn init_thumbnail_buttons(app_handle: AppHandle) -> Result<(), String> {
     let window = app_handle.get_webview_window("main").unwrap();
     let manager = ThumbnailManager::new(window).map_err(|e| format!("{}", e))?;
-
     app_handle.manage(Mutex::new(manager));
     Ok(())
 }

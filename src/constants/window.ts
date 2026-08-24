@@ -16,6 +16,8 @@ export const SM_WIDTH = '30rem';
 
 export const SIDE_BAR_WIDTH = '15rem';
 
+export const MEDIA_BAR_HEIGHT = '5rem';
+
 const ver = version();
 const os = type();
 

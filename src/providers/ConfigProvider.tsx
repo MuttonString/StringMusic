@@ -1,12 +1,6 @@
 import { emit, listen } from '@tauri-apps/api/event';
 import { load } from '@tauri-apps/plugin-store';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useReducer,
-} from 'react';
+import { createContext, useContext, useEffect, useReducer } from 'react';
 import { WINDOW_LABEL } from '../constants/window';
 import { applyConfigFnMap } from '../handlers/config';
 import type { EventPayload } from '../types/backend';
@@ -19,7 +13,7 @@ import {
   ColorMode,
   Colors,
   CyrillicToLatinMode,
-  RepeatMode,
+  PlaybackMode,
   RomajiMode,
   ShowAudioWave,
 } from '../types/config';
@@ -105,8 +99,7 @@ const initVal: AppConfig = {
   equalizerSliderMoveTogether: true,
   equalizer: [0, 0, 0, 0, 0, 0, 0, 0, 0],
   detune: 0,
-  repeatMode: RepeatMode.RepeatQueue,
-  shuffle: false,
+  playbackMode: PlaybackMode.RepeatQueue,
 
   recommendation: true,
   recentPlayed: true,
@@ -120,18 +113,18 @@ const initVal: AppConfig = {
   script: '',
 };
 
+const reducer = (prev: AppConfig, action: Partial<AppConfig>) => {
+  Object.entries(action).forEach(([key, value]) => {
+    applyConfigFnMap[key as keyof AppConfig]?.(value as never);
+  });
+  return { ...prev, ...action };
+};
+
 const Context = createContext<ConfigContext>([initVal, emitChanging]);
 
 export const useConfig = () => useContext(Context);
 
 export function ConfigProvider({ children }: ChildrenProp) {
-  const reducer = useCallback((prev: AppConfig, action: Partial<AppConfig>) => {
-    Object.entries(action).forEach(([key, value]) => {
-      applyConfigFnMap[key as keyof AppConfig]?.(value as never);
-    });
-    return { ...prev, ...action };
-  }, []);
-
   const [config, dispatch] = useReducer(reducer, initVal);
 
   useEffect(() => {
@@ -142,7 +135,7 @@ export function ConfigProvider({ children }: ChildrenProp) {
 
     const loadConfig = async () => {
       const store = await load('config.json');
-      const entries = await store.entries();
+      const entries = await store.entries<AppConfig[keyof AppConfig]>();
       const loaded = Object.fromEntries(entries) as Partial<AppConfig>;
       dispatch({ ...initVal, ...loaded });
 

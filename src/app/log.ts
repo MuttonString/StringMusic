@@ -5,23 +5,19 @@ function forwardConsole(
   logger: (message: string) => Promise<void>,
 ) {
   const original = console[fnName];
-  if (fnName === 'log') {
-    console.log = function (...args) {
-      const filtered = args.filter((arg) => {
-        return !(typeof arg === 'string' && /^DECORUM/.test(arg));
-      });
-      if (filtered.length) {
-        // 注意：重写原生console会导致浏览器控制台无法查看输出的准确来源
-        original(...filtered);
-        logger(JSON.stringify(filtered[0]));
-      }
-    };
-    return;
-  }
 
-  console[fnName] = (message) => {
-    original(message);
-    logger(message);
+  console[fnName] = (...args) => {
+    original(...args);
+
+    if (typeof args[0] === 'string') {
+      if (/The resource id [0-9]+ is invalid\./.test(args[0])) {
+        return;
+      }
+    } else {
+      args[0] = JSON.stringify(args[0]);
+    }
+
+    logger(args[0]);
   };
 }
 

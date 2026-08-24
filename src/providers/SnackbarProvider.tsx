@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react';
 import MaterialIcon from '../components/ui/MaterialIcon';
+import { WINDOW_LABEL } from '../constants/window';
 import type {
   ChildrenProp,
   OpenSnackbarFn,
@@ -56,29 +57,31 @@ export function SnackbarProvider({ children }: ChildrenProp) {
   return (
     <Context.Provider value={showSnackbar}>
       {children}
-      <Snackbar
-        className='max-w-75'
-        open={open}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        action={
-          type ? undefined : (
-            <IconButton
-              size='small'
-              color='inherit'
-              onClick={() => setOpen(false)}
-            >
-              <MaterialIcon name='close' />
-            </IconButton>
-          )
-        }
-        message={message}
-      >
-        {type ? (
-          <Alert onClose={() => setOpen(false)} severity={type}>
-            {message}
-          </Alert>
-        ) : undefined}
-      </Snackbar>
+      {WINDOW_LABEL === 'main' && (
+        <Snackbar
+          className='max-w-75'
+          open={open}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          action={
+            type ? undefined : (
+              <IconButton
+                size='small'
+                color='inherit'
+                onClick={() => setOpen(false)}
+              >
+                <MaterialIcon name='close' />
+              </IconButton>
+            )
+          }
+          message={message}
+        >
+          {type ? (
+            <Alert onClose={() => setOpen(false)} severity={type}>
+              {message}
+            </Alert>
+          ) : undefined}
+        </Snackbar>
+      )}
     </Context.Provider>
   );
 }

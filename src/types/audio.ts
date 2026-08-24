@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export interface MediaContext extends MediaState {
+export interface AudioContext extends AudioState {
   play: () => void;
   pause: () => void;
   prev: () => void;
@@ -9,6 +9,7 @@ export interface MediaContext extends MediaState {
   seekForward: () => void;
   updateQueue: (newQueue: Song[]) => void;
   setLyric: (lyric: LyricSentence[]) => void;
+  setCurrIdx: (idx: number) => void;
 }
 
 export enum TaskbarButtons {
@@ -20,6 +21,7 @@ export enum TaskbarButtons {
 export interface DetailMetadata {
   id?: string;
   api?: string;
+  translation?: string;
   label: string;
 }
 
@@ -28,7 +30,7 @@ export interface Song {
   api?: string; // 仅在线歌曲
   src: string;
   title: string;
-  artist?: DetailMetadata[];
+  artists?: DetailMetadata[];
   album?: DetailMetadata;
   cover?: string;
   duration?: number;
@@ -41,7 +43,7 @@ export interface LyricSentence {
   words?: { start: number; text: string }[];
 }
 
-export interface MediaState {
+export interface AudioState {
   currIdx: number; // 无正在播放的歌曲时为-1
   prevIdx: number;
   nextIdx: number;

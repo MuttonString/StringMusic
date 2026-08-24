@@ -34,7 +34,6 @@ export default function FontSelect({ value, onChange, onBlur }: Props) {
           if (fonts.length) return;
           setLoading(true);
           invoke<FontName[]>('get_system_fonts').then((val) => {
-            console.log(val);
             setFonts(val);
             setLoading(false);
           });

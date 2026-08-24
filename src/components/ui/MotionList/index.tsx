@@ -11,12 +11,11 @@ export default function MotionList({
   ...props
 }: ComponentProps<typeof MotionLi>) {
   const [config] = useConfig();
-  const duration = config.animationDuration;
 
   return (
     <MotionLi
       variants={LIST}
-      custom={duration}
+      custom={config.animationDuration}
       initial='hidden'
       animate='visible'
       exit='hidden'

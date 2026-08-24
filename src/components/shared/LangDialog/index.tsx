@@ -83,7 +83,9 @@ export default function LangDialog({ open, onClose }: DialogBaseProps) {
     async (selected = '') => {
       try {
         const langFolder = await join(await appDataDir(), 'lang');
-        if (!(await exists(langFolder))) return;
+        if (!(await exists(langFolder))) {
+          await mkdir('lang', { baseDir: BaseDirectory.AppData });
+        }
         const entries = await readDir(langFolder);
         const localList: ListItem[] = [
           {

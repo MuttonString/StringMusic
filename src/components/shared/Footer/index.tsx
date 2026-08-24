@@ -26,7 +26,12 @@ const enum VisionFilters {
 }
 
 const originalFetch = window.fetch;
+const originalOpen = XMLHttpRequest.prototype.open;
 const originalSend = XMLHttpRequest.prototype.send;
+
+interface __XMLHttpRequest extends XMLHttpRequest {
+  __url: string | URL;
+}
 
 interface Props {
   ref?: RefObject<HTMLElement>;
@@ -69,14 +74,50 @@ export default function Footer({ ref }: Props) {
   const simulateNetwork = useCallback((type: 0 | 1 | 2) => {
     setNetWorkSim(type);
     setNetworkSimAnchor(null);
+
+    const simOpen: XMLHttpRequest['open'] = function (
+      this: __XMLHttpRequest,
+      method,
+      url,
+      async?,
+      username?: string | null,
+      password?: string | null,
+    ) {
+      this.__url = url;
+      return originalOpen.call(
+        this,
+        method,
+        url,
+        async as boolean,
+        username,
+        password,
+      );
+    };
+
     switch (type) {
       case 0:
         window.fetch = originalFetch;
+        XMLHttpRequest.prototype.open = originalOpen;
         XMLHttpRequest.prototype.send = originalSend;
         break;
       case 1:
         const delay = () => Math.random() * 2000 + 2000;
+
         window.fetch = function (...args) {
+          let url = args[0];
+          if (url instanceof URL) {
+            url = url.href;
+          } else if (typeof url === 'object') {
+            url = url.url;
+          }
+
+          if (
+            typeof url === 'string' &&
+            url.startsWith('http://ipc.localhost/')
+          ) {
+            return originalFetch(...args);
+          }
+
           return new Promise((resolve, reject) => {
             setTimeout(() => {
               originalFetch(...args)
@@ -85,21 +126,64 @@ export default function Footer({ ref }: Props) {
             }, delay());
           });
         };
+
+        XMLHttpRequest.prototype.open = simOpen;
         XMLHttpRequest.prototype.send = function (...args) {
+          let url = (this as __XMLHttpRequest).__url;
+          if (url instanceof URL) {
+            url = url.href;
+          }
+
+          if (
+            typeof url === 'string' &&
+            url.startsWith('http://ipc.localhost/')
+          ) {
+            return originalSend.call(this, ...args);
+          }
+
           setTimeout(() => {
             originalSend.call(this, ...args);
           }, delay());
         };
         break;
       case 2:
-        window.fetch = function () {
+        XMLHttpRequest.prototype.open = simOpen;
+
+        window.fetch = function (...args) {
+          let url = args[0];
+          if (url instanceof URL) {
+            url = url.href;
+          } else if (typeof url === 'object') {
+            url = url.url;
+          }
+
+          if (
+            typeof url === 'string' &&
+            url.startsWith('http://ipc.localhost/')
+          ) {
+            return originalFetch(...args);
+          }
+
           return new Promise((_, reject) => {
             const error = new TypeError('(Simulation) Failed to fetch');
             error.name = 'TypeError';
             reject(error);
           });
         };
-        XMLHttpRequest.prototype.send = function () {
+
+        XMLHttpRequest.prototype.send = function (...args) {
+          let url = (this as __XMLHttpRequest).__url;
+          if (url instanceof URL) {
+            url = url.href;
+          }
+
+          if (
+            typeof url === 'string' &&
+            url.startsWith('http://ipc.localhost/')
+          ) {
+            return originalSend.call(this, ...args);
+          }
+
           Object.defineProperty(this, 'readyState', { value: 4 });
           Object.defineProperty(this, 'status', { value: 0 });
           Object.defineProperty(this, 'response', { value: '' });

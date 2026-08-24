@@ -46,7 +46,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "dmg", "deb", "rpm"],
+    "targets": ["nsis", "dmg", "deb", "rpm", "appimage"],
     "publisher": "Mutton String",
     "windows": {
       "webviewInstallMode": {

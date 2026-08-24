@@ -65,8 +65,7 @@ export const CONFIG_ID_LIST = [
   'equalizerSliderMoveTogether',
   'equalizer',
   'detune',
-  'repeatMode',
-  'shuffle',
+  'playbackMode',
 
   'recommendation',
   'recentPlayed',

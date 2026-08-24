@@ -287,7 +287,7 @@ export default function WindowAppeance({ refs }: RefsProp) {
                   style.backgroundColor = `rgb(var(--mui-palette-AppBar-defaultBgChannel) / ${val}%)`;
                   style.setProperty(
                     '--bg-color',
-                    `rgb(var(--mui-palette-background-defaultChannel) / ${Math.pow(val / 100, 5)})`,
+                    `rgb(var(--mui-palette-background-defaultChannel) / ${(val / 100) ** 5})`,
                   );
                   setOpacityMain(val);
                 }}

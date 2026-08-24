@@ -1,16 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { PAGE } from '../../../constants/animation';
-import { MAIN_WINDOW } from '../../../constants/window';
 import { useNavigator } from '../../../providers/NavigatorProvider';
 import { PageOperation } from '../../../types/navigator';
 
 export default function MainContent() {
   const { lastOperation } = useNavigator();
   const location = useLocation();
-  const { t } = useTranslation();
 
   const enterAnimation = useMemo(() => {
     switch (lastOperation) {
@@ -22,11 +19,6 @@ export default function MainContent() {
         return 'new';
     }
   }, [lastOperation]);
-
-  useEffect(() => {
-    // todo 禁用了标题随音乐，且无音乐播放，执行：
-    MAIN_WINDOW.setTitle(t('common.stringMusic'));
-  }, [t]);
 
   return (
     <main

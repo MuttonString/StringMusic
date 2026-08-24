@@ -16,22 +16,10 @@ mod taskbar;
 
 #[cfg(desktop)]
 mod titlebar;
-#[derive(Default)]
-struct AppState {
-    opened_file: Mutex<Option<String>>,
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let args: Vec<String> = env::args_os()
-        .map(|os| os.into_string().unwrap_or_else(|_| "".to_string()))
-        .collect();
-    let initial_file = args.get(1).cloned();
-
     let mut builder = tauri::Builder::default()
-        .manage(AppState {
-            opened_file: Mutex::new(initial_file),
-        })
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
@@ -45,11 +33,15 @@ pub fn run() {
     {
         use tauri_plugin_window_state::StateFlags;
         builder = builder
-            .plugin(tauri_plugin_single_instance::init(|app, _, _| {
-                let _ = app
-                    .get_webview_window("main")
-                    .expect("no main window")
-                    .set_focus();
+            .plugin(tauri_plugin_single_instance::init(|app, args, _| {
+                let main_window = app.get_webview_window("main").expect("no main window");
+                let _ = main_window.show();
+                let _ = main_window.unminimize();
+                let _ = main_window.set_focus();
+
+                if args.len() > 1 {
+                    let _ = app.emit("open-uri", args[1..].to_vec());
+                }
             }))
             .plugin(tauri_plugin_decorum::init());
 
@@ -112,18 +104,11 @@ pub fn run() {
             let app_handle_panic = app_handle.clone();
             let main_window = app.get_webview_window("main").unwrap();
 
-            let state = app_handle.state::<AppState>();
-            if let Some(path) = state.opened_file.lock().unwrap().clone() {
-                log::info!("Starting app with path \"{}\"", path);
-                app.emit("opened", path).unwrap();
-            } else {
-                log::info!("Starting app...");
-            }
-
+            log::info!("Starting app...");
             log::info!("App version: {}", app.package_info().version);
             log::info!(
                 "Webview version: {}",
-                wry::webview_version().unwrap_or_else(|_| "unknown".to_string())
+                wry::webview_version().unwrap_or("Unknown".to_string())
             );
             log::info!(
                 "OS info: {} {} ({})",
@@ -133,13 +118,21 @@ pub fn run() {
             );
             log::info!(
                 "Locale: {}",
-                tauri_plugin_os::locale().unwrap_or_else(|| "unknown".to_string())
+                tauri_plugin_os::locale().unwrap_or("Unknown".to_string())
             );
+
+            // 处理启动参数
+            let args: Vec<String> = env::args().collect();
+            if args.len() > 1 {
+                app.state::<open::OpenedUrls>()
+                    .0
+                    .lock()
+                    .unwrap()
+                    .extend(args[1..].to_vec());
+            }
 
             #[cfg(desktop)]
             titlebar::create_titlebar(main_window.clone());
-
-            media_control::init_media_control(app_handle);
 
             // 捕获panic
             panic::set_hook(Box::new(move |panic_info| {
@@ -169,12 +162,15 @@ pub fn run() {
             open::opened_urls,
             media_control::set_metadata,
             media_control::set_playback,
+            media_control::init_media_control,
+            media_control::attach_media_control,
+            media_control::detach_media_control,
             #[cfg(desktop)]
             titlebar::create_titlebar,
             #[cfg(target_os = "windows")]
             taskbar::update_buttons,
             #[cfg(target_os = "windows")]
-            taskbar::init_taskbar_buttons,
+            taskbar::init_thumbnail_buttons,
         ])
         .build(tauri::generate_context!())
         .expect("Error while running tauri application.")
@@ -185,18 +181,31 @@ pub fn run() {
             }
 
             #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
-            if let RunEvent::Opened { ref urls } = event {
+            if let RunEvent::Opened { urls } = event {
+                let url_strs: Vec<String> = urls
+                    .into_iter()
+                    .map(|url: tauri::Url| {
+                        if url.scheme() == "file" {
+                            match url.to_file_path() {
+                                Ok(path) => path.to_string_lossy().into_owned(),
+                                Err(_) => url.as_str().to_string(),
+                            }
+                        } else {
+                            url.as_str().to_string()
+                        }
+                    })
+                    .collect();
                 _app.state::<open::OpenedUrls>()
                     .0
                     .lock()
                     .unwrap()
-                    .extend(urls.clone());
-                _app.emit("opened", urls).unwrap();
+                    .extend(url_strs);
+                let _ = _app.emit("open-uri", url_strs);
             }
 
             #[cfg(target_os = "macos")]
             if let RunEvent::Reopen { .. } = event {
-                _app.emit("reopen", ()).unwrap();
+                let _ = _app.emit("reopen", ());
             }
         });
 }

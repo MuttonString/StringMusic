@@ -35,10 +35,10 @@ export default function ConfigDrawer({ ref }: Props) {
   const refs = useRef<Record<string, HTMLElement | null>>({});
   const { t } = useTranslation();
 
-  const handleJump = useCallback((str: string) => {
+  const handleJump = useCallback((str: string, smooth = false) => {
     const el = refs.current[str];
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: smooth ? 'smooth' : 'instant' });
     }
   }, []);
 
@@ -46,8 +46,8 @@ export default function ConfigDrawer({ ref }: Props) {
     ref,
     () =>
       function (jumpTo) {
-        setOpen(true);
         if (jumpTo) handleJump(jumpTo);
+        setOpen(true);
       },
   );
 
@@ -93,7 +93,7 @@ export default function ConfigDrawer({ ref }: Props) {
             value={null}
             onChange={(_, val) => {
               if (val) {
-                handleJump(val.id);
+                handleJump(val.id, true);
               }
               setSearchInput('');
             }}

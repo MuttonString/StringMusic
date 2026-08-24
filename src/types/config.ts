@@ -49,10 +49,11 @@ export const enum ShowAudioWave {
   Always,
 }
 
-export const enum RepeatMode {
+export const enum PlaybackMode {
   NoRepeat,
   RepeatOne,
   RepeatQueue,
+  Shuffle,
 }
 
 export const enum RomajiMode {
@@ -148,8 +149,7 @@ export interface AppConfig {
     number,
   ];
   detune: number;
-  repeatMode: RepeatMode;
-  shuffle: boolean;
+  playbackMode: PlaybackMode;
 
   // 隐私
   recommendation: boolean;

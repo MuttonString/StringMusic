@@ -1,7 +1,7 @@
 import type { Variants } from 'framer-motion';
 import { isRTL } from '../utils/window';
 
-export const DEFAULT_DURATION = 0.25;
+export const DEFAULT_DURATION = 0.3;
 
 export const DIALOG_LEVAING_MS = 225;
 
@@ -55,7 +55,7 @@ export const LIST: Variants = {
   visible: (durationScale: number) => ({
     transition: {
       when: 'beforeChildren',
-      staggerChildren: (durationScale * DEFAULT_DURATION) / 5,
+      staggerChildren: (durationScale * DEFAULT_DURATION) / 4,
     },
   }),
 };
