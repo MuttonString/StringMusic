@@ -158,7 +158,7 @@ export default function StyleProvider({ children }: ChildrenProp) {
               : {
                   borderRadius: '8px',
                   padding: '4px 16px',
-                  margin: '2px 0',
+                  margin: '4px 0',
                 },
           },
         },
@@ -168,7 +168,7 @@ export default function StyleProvider({ children }: ChildrenProp) {
               ? undefined
               : {
                   borderRadius: '8px',
-                  margin: '2px 8px',
+                  margin: '3px 8px',
                 },
           },
         },
