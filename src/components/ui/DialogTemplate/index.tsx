@@ -72,9 +72,9 @@ export default function DialogTemplate(props: IProps) {
             </Tip>
           )}
           {onConfirm && (
-            <Tip title={t('dialog.confirm')}>
+            <Tip title={t('dialog.confirm')} disabled={confirmDisabled}>
               <IconButton
-                color='secondary'
+                color='primary'
                 onClick={onConfirm}
                 disabled={confirmDisabled}
               >

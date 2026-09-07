@@ -1,9 +1,12 @@
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
+import { Fade } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import GlobalStyles from '@mui/material/GlobalStyles';
 import {
   createTheme,
+  darken,
+  lighten,
   StyledEngineProvider,
   ThemeProvider,
 } from '@mui/material/styles';
@@ -16,12 +19,7 @@ import '../app/global.less';
 import i18n from '../app/i18n';
 import MaterialIcon from '../components/ui/MaterialIcon';
 import { DEFAULT_DURATION } from '../constants/animation';
-import {
-  COLOR_MAP,
-  DARK_SECONDARY_COLOR_SHADE,
-  DEFAULT_COLOR_SHADE,
-  LIGHT_SECONDARY_COLOR_SHADE,
-} from '../constants/colors';
+import { COLOR_VALUE_MAP } from '../constants/colors';
 import useDarkModeQuery from '../hooks/useDarkModeQuery';
 import type { ChildrenProp } from '../types/component';
 import { ColorMode, Colors } from '../types/config';
@@ -56,20 +54,20 @@ export default function StyleProvider({ children }: ChildrenProp) {
         defaultColorScheme = isDarkMode ? 'dark' : 'light';
     }
 
-    const color = COLOR_MAP[primaryColor] || COLOR_MAP[Colors.Cyan];
+    const color = COLOR_VALUE_MAP[primaryColor] || COLOR_VALUE_MAP[Colors.Cyan];
 
     return createTheme({
       cssVariables: true,
       direction,
       defaultColorScheme,
       palette: {
-        primary: { main: color[DEFAULT_COLOR_SHADE] },
-        secondary: {
-          main: color[
+        primary: { main: color.main },
+        secondary: { main: color.main },
+        background: {
+          default:
             defaultColorScheme === 'light'
-              ? LIGHT_SECONDARY_COLOR_SHADE
-              : DARK_SECONDARY_COLOR_SHADE
-          ],
+              ? lighten(color.light, 0.6)
+              : darken(color.dark, 0.8),
         },
       },
       shape: {
@@ -86,12 +84,25 @@ export default function StyleProvider({ children }: ChildrenProp) {
           leavingScreen: 195 * duration,
         },
       },
+      motion: { reducedMotion: duration ? 'system' : 'always' },
       typography: {
         fontFamily,
       },
       components: {
+        MuiDialog: {
+          styleOverrides: {
+            paper: { backgroundColor: 'var(--mui-palette-background-default)' },
+          },
+        },
         MuiPopover: {
-          defaultProps: { transitionDuration: 150 * duration },
+          defaultProps: {
+            slots: { transition: Fade },
+          },
+        },
+        MuiMenu: {
+          defaultProps: {
+            slots: { transition: Fade },
+          },
         },
         MuiButton: {
           styleOverrides: {
@@ -110,14 +121,13 @@ export default function StyleProvider({ children }: ChildrenProp) {
               borderRadius: sharpStyle ? 0 : '8px',
               height: 'calc(100% - 16px)',
               margin: '8px',
-              boxShadow: 'var(--mui-shadows-16)',
             },
           },
         },
         MuiSlider: {
           styleOverrides: {
             valueLabel: {
-              borderRadius: '8px',
+              borderRadius: sharpStyle ? 0 : '8px',
             },
           },
         },

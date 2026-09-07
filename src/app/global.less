@@ -17,13 +17,6 @@
   }
 }
 
-.MuiPopover-paper {
-  transition:
-    opacity min(calc(var(--duration) * 100ms), 500ms)
-      cubic-bezier(0.4, 0, 0.2, 1),
-    transform calc(var(--duration) * 150ms) cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
 .MuiTouchRipple-rippleVisible {
   animation-duration: calc(var(--duration) * 550ms) !important;
 }
@@ -33,23 +26,30 @@
 }
 
 body {
+  @bg: var(--mui-palette-AppBar-defaultBg);
   user-select: none;
   cursor: default;
   overflow: clip;
   margin: 0;
   padding: 0;
-  background-color: var(--mui-palette-AppBar-defaultBg);
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
+  background:
+    linear-gradient(var(--bg-overlay), var(--bg-overlay)),
+    var(--bg-image) center/cover no-repeat,
+    @bg;
 
   --font: var(--font-sans);
   --duration: 1;
   --bg-color: var(--mui-palette-background-default);
+  --bg-overlay: @bg;
+  --bg-image: linear-gradient(@bg, @bg);
   --title-bar-btn-width: 3rem;
   --title-bar-height: 2.5rem;
   --side-bar-width: 15rem;
   --media-bar-height: 5rem;
+
+  @media (forced-colors: active) {
+    --bg-image: linear-gradient(@bg, @bg) !important;
+  }
 }
 
 *:not(.decorum-tb-btn) {
@@ -74,13 +74,13 @@ textarea,
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--mui-palette-action-focus, white);
-  border-radius: 8px;
+  border-radius: 6px;
 
   &:hover {
     background-color: var(--mui-palette-text-disabled, white);
@@ -101,10 +101,23 @@ textarea,
   color: var(--mui-palette-primary-contrastText, white);
 }
 
+.MuiTooltip-tooltipArrow {
+  @color: var(--mui-palette-grey-600);
+  background-color: @color !important;
+  backdrop-filter: unset !important;
+  font: var(--mui-font-body2) !important;
+
+  .MuiTooltip-arrow {
+    color: @color;
+  }
+}
+
 .advanced-material {
+  --advanced-material-opacity: 0.6;
+
   .bg(@bgcolorChannel) {
-    background-color: rgb(@bgcolorChannel / 0.6);
-    backdrop-filter: saturate(220%) blur(16px);
+    background-color: rgb(@bgcolorChannel / var(--advanced-material-opacity));
+    backdrop-filter: saturate(180%) blur(20px);
   }
 
   .MuiBackdrop-root:not([aria-hidden]),
@@ -119,10 +132,6 @@ textarea,
   }
 
   .MuiTooltip-tooltip {
-    .bg(var(--mui-palette-Tooltip-bgChannel));
-  }
-
-  .MuiTooltip-arrow {
     .bg(var(--mui-palette-Tooltip-bgChannel));
   }
 
@@ -145,15 +154,6 @@ textarea,
 
     .MuiAlert-colorWarning {
       .bg(var(--mui-palette-Alert-warningStandardBgChannel));
-    }
-  }
-
-  .MuiSlider-valueLabel {
-    .bg(75 75 75);
-
-    &::before {
-      .bg(75 75 75);
-      clip-path: polygon(0 100%, 100% 0, 100% 100%);
     }
   }
 }

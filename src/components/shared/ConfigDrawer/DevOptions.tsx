@@ -15,6 +15,7 @@ import { useConfig } from '../../../providers/ConfigProvider';
 import type { RefsProp } from '../../../types/component';
 import { compress, decompress } from '../../../utils/data';
 import LabelControlPair from '../../ui/LabelControlPair';
+import MaterialIcon from '../../ui/MaterialIcon';
 
 export default function DevOptions({ refs }: RefsProp) {
   const { t } = useTranslation();
@@ -37,43 +38,49 @@ export default function DevOptions({ refs }: RefsProp) {
   if (err) throw Error('(╯°Д°)╯ ┻━┻');
 
   return (
-    <div className='flex flex-col gap-4 items-start'>
-      <Typography variant='h6' color='secondary' ref={addRef('devOptions')}>
+    <div>
+      <Typography variant='h6' color='primary' ref={addRef('devOptions')}>
         {t('config.devOptions')}
       </Typography>
 
-      <FormControlLabel
-        ref={addRef('enableDevOptions')}
-        label={t('config.enableDevOptions')}
-        control={
-          <Switch
-            checked={config.enableDevOptions}
-            onChange={(_, val) => updateConfig({ enableDevOptions: val })}
-          />
-        }
-      />
+      <div>
+        <FormControlLabel
+          ref={addRef('enableDevOptions')}
+          label={t('config.enableDevOptions')}
+          control={
+            <Switch
+              checked={config.enableDevOptions}
+              onChange={(_, val) => updateConfig({ enableDevOptions: val })}
+            />
+          }
+        />
+      </div>
 
-      <FormControlLabel
-        ref={addRef('forceRTL')}
-        label={t('config.forceRTL')}
-        control={
-          <Switch
-            checked={config.forceRTL}
-            onChange={(_, val) => updateConfig({ forceRTL: val })}
-          />
-        }
-      />
+      <div>
+        <FormControlLabel
+          ref={addRef('forceRTL')}
+          label={t('config.forceRTL')}
+          control={
+            <Switch
+              checked={config.forceRTL}
+              onChange={(_, val) => updateConfig({ forceRTL: val })}
+            />
+          }
+        />
+      </div>
 
-      <FormControlLabel
-        ref={addRef('showFooter')}
-        label={t('config.showFooter')}
-        control={
-          <Switch
-            checked={config.showFooter}
-            onChange={(_, val) => updateConfig({ showFooter: val })}
-          />
-        }
-      />
+      <div>
+        <FormControlLabel
+          ref={addRef('showFooter')}
+          label={t('config.showFooter')}
+          control={
+            <Switch
+              checked={config.showFooter}
+              onChange={(_, val) => updateConfig({ showFooter: val })}
+            />
+          }
+        />
+      </div>
 
       <LabelControlPair
         ref={addRef('script')}
@@ -100,71 +107,75 @@ export default function DevOptions({ refs }: RefsProp) {
         }
       />
 
-      {IS_DESKTOP && (
-        <>
-          <Button
-            variant='outlined'
-            color='secondary'
-            fullWidth
-            onClick={async () => openPath(await appDataDir())}
-            ref={addRef('openAppdata')}
-          >
-            {t('config.openAppdata')}
-          </Button>
+      <div className='flex flex-col gap-2'>
+        {IS_DESKTOP && (
+          <>
+            <Button
+              variant='outlined'
+              fullWidth
+              startIcon={<MaterialIcon name='openInNew' />}
+              onClick={async () => openPath(await appDataDir())}
+              ref={addRef('openAppdata')}
+            >
+              {t('config.openAppdata')}
+            </Button>
 
-          <Button
-            variant='outlined'
-            color='secondary'
-            fullWidth
-            onClick={async () => openPath(await appLogDir())}
-            ref={addRef('openLog')}
-          >
-            {t('config.openLog')}
-          </Button>
-        </>
-      )}
+            <Button
+              variant='outlined'
+              fullWidth
+              startIcon={<MaterialIcon name='openInNew' />}
+              onClick={async () => openPath(await appLogDir())}
+              ref={addRef('openLog')}
+            >
+              {t('config.openLog')}
+            </Button>
+          </>
+        )}
 
-      <Button
-        fullWidth
-        variant='outlined'
-        color={'warning'}
-        onClick={async () => {
-          if (
-            await ask(
-              t('msg.areYouSure', {
-                title: t('config.throwError'),
-                kind: 'warning',
-              }),
-            )
-          ) {
-            setErr(true);
-          }
-        }}
-        ref={addRef('throwError')}
-      >
-        {t('config.throwError')}
-      </Button>
+        <Button
+          fullWidth
+          variant='outlined'
+          color={'warning'}
+          onClick={async () => {
+            if (
+              await ask(
+                t('msg.areYouSure', {
+                  title: t('config.throwError'),
+                  kind: 'warning',
+                }),
+                t('common.stringMusic'),
+              )
+            ) {
+              setErr(true);
+            }
+          }}
+          ref={addRef('throwError')}
+        >
+          {t('config.throwError')}
+        </Button>
 
-      <Button
-        fullWidth
-        variant='outlined'
-        color={'error'}
-        onClick={async () => {
-          if (
-            await ask(
-              t('msg.areYouSure', {
-                title: t('config.crash'),
-                kind: 'warning',
-              }),
-            )
-          ) {
-            invoke('crash');
-          }
-        }}
-        ref={addRef('crash')}
-      >
-        {t('config.crash')}
-      </Button>
+        <Button
+          fullWidth
+          variant='outlined'
+          color={'error'}
+          onClick={async () => {
+            if (
+              await ask(
+                t('msg.areYouSure', {
+                  title: t('config.crash'),
+                  kind: 'warning',
+                }),
+                t('common.stringMusic'),
+              )
+            ) {
+              invoke('crash');
+            }
+          }}
+          ref={addRef('crash')}
+        >
+          {t('config.crash')}
+        </Button>
+      </div>
     </div>
   );
 }

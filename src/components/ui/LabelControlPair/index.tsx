@@ -9,7 +9,7 @@ interface Props {
 
 export default function LabelControlPair({ ref, label, control }: Props) {
   return (
-    <div className='flex flex-col w-full'>
+    <div className='flex flex-col'>
       <FormLabel ref={ref}>{label}</FormLabel>
       {control}
     </div>

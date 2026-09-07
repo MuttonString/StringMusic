@@ -1,17 +1,14 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import CloseWindowHandler from '../../components/shared/CloseWindowHandler';
 import Footer from '../../components/shared/Footer';
 import MainContent from '../../components/shared/MainContent';
 import MediaBar from '../../components/shared/MediaBar';
 import SideBar from '../../components/shared/SideBar';
 import TitleBar from '../../components/shared/TitleBar';
-import { VERTICAL } from '../../constants/animation';
 import useTrayMenu from '../../hooks/useTrayMenu';
 import { ConfigDrawerProvider } from '../../providers/ConfigDrawerProvider';
 import { useConfig } from '../../providers/ConfigProvider';
 import { NavigatorProvider } from '../../providers/NavigatorProvider';
-
-const MotionFooter = motion.create(Footer);
 
 export default function Layout() {
   const [config] = useConfig();
@@ -28,17 +25,7 @@ export default function Layout() {
           <MainContent />
         </div>
         <MediaBar />
-        <AnimatePresence>
-          {showFooter && (
-            <MotionFooter
-              variants={VERTICAL}
-              custom='2rem'
-              initial='hidden'
-              whileInView='visible'
-              exit='hidden'
-            />
-          )}
-        </AnimatePresence>
+        <AnimatePresence>{showFooter && <Footer />}</AnimatePresence>
         <CloseWindowHandler />
       </ConfigDrawerProvider>
     </NavigatorProvider>

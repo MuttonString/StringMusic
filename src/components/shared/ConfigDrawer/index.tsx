@@ -83,7 +83,7 @@ export default function ConfigDrawer({ ref }: Props) {
       onClose={() => setOpen(false)}
       anchor='right'
     >
-      <div className='w-75 h-full overflow-clip flex flex-col'>
+      <div className='w-85 h-full overflow-clip flex flex-col'>
         <div className='p-4'>
           <Autocomplete
             openOnFocus
@@ -125,7 +125,7 @@ export default function ConfigDrawer({ ref }: Props) {
         </div>
         <Divider />
 
-        <div className='overflow-auto flex-1 p-4 flex flex-col gap-12'>
+        <div className='overflow-auto flex-1 p-3 flex flex-col gap-8 text-nowrap [&_label]:text-wrap [&>div]:flex [&>div]:flex-col [&>div]:gap-2 [&>div]:items-start [&>div>div]:bg-action-hover [&>div>div]:hover:bg-action-focus [&>div>div]:rounded-lg [&>div>div]:p-2 [&>div>div]:w-full'>
           <Common refs={refs} />
           <WindowAppeance refs={refs} />
           <About refs={refs} />

@@ -8,7 +8,7 @@ import { KeyCode } from '../types/keyCode';
  * 展示包含空格和括号的快捷键描述，非Mac系统的多个键之间自动拼接加号，修饰键的描述因系统而异
  * @param text 描述性文本，如“粘贴”
  * @param keys 按键名，如“KeyCode.Ctrl, 'V'”
- * @returns 如“粘贴 (Ctrl+V)”“粘贴 ⌘V”格式的文本
+ * @returns 如“粘贴 (Ctrl+V)”或“粘贴 ⌘V”这样的格式的文本
  */
 export function showShortcutKey(text: string, ...keys: string[]) {
   if (IS_APPLE) {
@@ -29,6 +29,9 @@ export function showShortcutKey(text: string, ...keys: string[]) {
     .join('+')})`;
 }
 
+/**
+ * 处理开发者模式的相关快捷键
+ */
 export function listenDevKey(e: KeyboardEvent) {
   if ((e.primaryKey && e.shiftKey && e.code === 'KeyI') || e.key === 'F12') {
     invoke('open_devtools');

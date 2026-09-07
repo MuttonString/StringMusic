@@ -149,104 +149,108 @@ export default function About({ refs }: RefsProp) {
   );
 
   return (
-    <div className='flex flex-col gap-4 items-start'>
-      <Typography variant='h6' color='secondary' ref={addRef('about')}>
+    <div>
+      <Typography variant='h6' color='primary' ref={addRef('about')}>
         {t('config.about')}
       </Typography>
 
-      <List dense>
-        <ListItem disablePadding>
-          <ListItemButton
-            onDoubleClick={() => {
-              openUrl('https://github.com/MuttonString/StringMusic');
-            }}
+      <div>
+        <List dense disablePadding>
+          <ListItem disablePadding>
+            <ListItemButton
+              onDoubleClick={() => {
+                openUrl('https://github.com/MuttonString/StringMusic');
+              }}
+            >
+              <ListItemIcon sx={{ marginRight: '8px' }}>
+                <Avatar src='https://avatars.githubusercontent.com/u/97750941'>
+                  <GitHubIcon />
+                </Avatar>
+              </ListItemIcon>
+              <ListItemText
+                primary={t('config.author')}
+                secondary='Mutton String'
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => setLibOpen(true)}>
+              <ListItemText
+                primary={t('config.openSourceLib')}
+                secondary={t('config.clickToView')}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <DialogTemplate
+            title={t('config.openSourceLib')}
+            maxWidth='xs'
+            open={libOpen}
+            onClose={() => setLibOpen(false)}
           >
-            <ListItemIcon sx={{ marginRight: '8px' }}>
-              <Avatar src='https://avatars.githubusercontent.com/u/97750941'>
-                <GitHubIcon />
-              </Avatar>
-            </ListItemIcon>
+            {OPEN_SOURCE_LIBRARY.map((item, idx) => (
+              <Button
+                size='small'
+                color='inherit'
+                key={idx}
+                onClick={() => openUrl(item[1])}
+              >
+                {item[0]}
+              </Button>
+            ))}
+          </DialogTemplate>
+
+          <ListItem disablePadding>
+            <ListItemButton
+              onDoubleClick={() => {
+                updateConfig({ enableDevOptions: true });
+                showSnackbar(t('msg.devOptionEnabled'));
+              }}
+            >
+              <ListItemText
+                primary={t('config.appVer')}
+                secondary={info?.ver}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem>
             <ListItemText
-              primary={t('config.about.author')}
+              primary={t('config.frameworkVer')}
+              secondary={info && `Tauri ${info.tauri}, React ${info.react}`}
+            />
+          </ListItem>
+
+          <ListItem>
+            <ListItemText
+              primary={t('config.webviewVer')}
+              secondary={info?.webview}
+            />
+          </ListItem>
+
+          <ListItem>
+            <ListItemText
+              primary={t('config.osInfo')}
               secondary={
-                ['zh', 'ja'].includes(getLangs()[0].substring(0, 2))
-                  ? '羊肉串'
-                  : 'Mutton String'
+                info && (
+                  <span className='flex gap-1 items-center'>
+                    {info.type[1]}
+                    <span>{`${info.type[0]} ${info.osVer}${info.arch}`}</span>
+                  </span>
+                )
               }
             />
-          </ListItemButton>
-        </ListItem>
+          </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => setLibOpen(true)}>
+          <ListItem>
             <ListItemText
-              primary={t('config.openSourceLib')}
-              secondary={t('config.clickToView')}
+              primary={t('config.locale')}
+              secondary={info?.locale}
             />
-          </ListItemButton>
-        </ListItem>
-
-        <DialogTemplate
-          title={t('config.openSourceLib')}
-          maxWidth='xs'
-          open={libOpen}
-          onClose={() => setLibOpen(false)}
-        >
-          {OPEN_SOURCE_LIBRARY.map((item, idx) => (
-            <Button
-              size='small'
-              color='inherit'
-              key={idx}
-              onClick={() => openUrl(item[1])}
-            >
-              {item[0]}
-            </Button>
-          ))}
-        </DialogTemplate>
-
-        <ListItem disablePadding>
-          <ListItemButton
-            onDoubleClick={() => {
-              updateConfig({ enableDevOptions: true });
-              showSnackbar(t('msg.devOptionEnabled'));
-            }}
-          >
-            <ListItemText primary={t('config.appVer')} secondary={info?.ver} />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem>
-          <ListItemText
-            primary={t('config.frameworkVer')}
-            secondary={info && `Tauri ${info.tauri}, React ${info.react}`}
-          />
-        </ListItem>
-
-        <ListItem>
-          <ListItemText
-            primary={t('config.webviewVer')}
-            secondary={info?.webview}
-          />
-        </ListItem>
-
-        <ListItem>
-          <ListItemText
-            primary={t('config.osInfo')}
-            secondary={
-              info && (
-                <span className='flex gap-2 items-center'>
-                  {info.type[1]}
-                  <span>{`${info.type[0]} ${info.osVer}${info.arch}`}</span>
-                </span>
-              )
-            }
-          />
-        </ListItem>
-
-        <ListItem>
-          <ListItemText primary={t('config.locale')} secondary={info?.locale} />
-        </ListItem>
-      </List>
+          </ListItem>
+        </List>
+      </div>
     </div>
   );
 }

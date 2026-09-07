@@ -13,9 +13,9 @@ export default function ErrorBoundaryBase({ error, errorInfo }: Props) {
   return (
     <div
       lang='en'
-      className='p-8 max-w-dvw h-dvh bg-black text-white [&_div]:select-text [&_div]:cursor-text'
+      className='p-8 max-w-dvw h-dvh bg-[gray] text-white [&_div]:select-text [&_div]:cursor-text'
     >
-      <header className='h-(--title-bar-height) w-full fixed bg-[gray] top-0 left-0 right-0' />
+      <header className='h-(--title-bar-height) w-full fixed border-white border-b top-0 left-0 right-0' />
       <div className='text-[red] text-3xl mb-4 mt-4'>
         Unexpected Application Error
       </div>

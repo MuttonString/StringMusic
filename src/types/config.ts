@@ -13,25 +13,32 @@ export const enum ColorMode {
 }
 
 export const enum Colors {
-  Amber,
-  Blue,
-  BlueGrey,
-  Brown,
-  Cyan,
-  DeepOrange,
-  DeepPurple,
-  Green,
-  Grey,
-  Indigo,
-  LightBlue,
-  LightGreen,
-  Lime,
-  Orange,
-  Pink,
-  Purple,
   Red,
-  Teal,
+  Orange,
+  Amber,
   Yellow,
+  Lime,
+  Green,
+  Emerald,
+  Teal,
+  Cyan,
+  Sky,
+  Blue,
+  Indigo,
+  Violet,
+  Purple,
+  Fuchsia,
+  Pink,
+  Rose,
+  Slate,
+  Gray,
+  Zinc,
+  Neutral,
+  Stone,
+  Taupe,
+  Mauve,
+  Mist,
+  Olive,
 }
 
 export const enum BackgroundType {
@@ -41,6 +48,12 @@ export const enum BackgroundType {
   Mica, // Windows 10.0.22000+
   SinglePicture, // 在小窗下使用专辑封面
   RandomPictures, // 仅桌面端
+}
+
+export const enum LyricAlign {
+  InlineStart,
+  InlineEnd,
+  Separate,
 }
 
 export const enum ShowAudioWave {
@@ -69,6 +82,7 @@ export const enum CyrillicToLatinMode {
   Gost,
 }
 
+// 键修改时需在 src\constants\config.ts 同步更改
 export interface AppConfig {
   // 通用
   language: string; // 为空时跟随系统
@@ -84,7 +98,7 @@ export interface AppConfig {
   primaryColor: Colors;
   backgroundMainWindow: {
     type: BackgroundType;
-    opacity: number; // 仅在标准背景或图片背景时有效
+    opacity: number; // 仅在图片背景时有效
     path: string; // 仅在图片背景时有效
   };
   backgroundMiniWindow: {
@@ -92,7 +106,10 @@ export interface AppConfig {
     opacity: number; // 仅在标准背景或图片背景时有效
   };
   globalFont: string; // 为空时使用默认
-  advancedMaterial: boolean;
+  advancedMaterial: {
+    enabled: boolean;
+    opacity: number; // 仅启用时有效
+  };
   sharpStyle: boolean;
   animationDuration: number;
 
@@ -100,11 +117,16 @@ export interface AppConfig {
   // playbackPageBackground
   // dynamicWaveType
   // coverBounce
+  // showPronounciation
+  // showTranslation
+  // showPlayQueue
 
   // 桌面歌词
   enableDesktopLyric: boolean;
   lockDesktopLyric: boolean;
   lyricFont: string; // 为空时跟随全局
+  multiline: boolean;
+  lyricAlign: LyricAlign;
   longitudinal: boolean;
   textStroke: boolean;
   textShadow: boolean;
@@ -131,6 +153,7 @@ export interface AppConfig {
   replaceWholeList: boolean;
   replayDelay: number;
   volume: number;
+  mute: boolean;
   dynamicVolume: boolean;
   canVolumnOver100: boolean;
   speed: number;

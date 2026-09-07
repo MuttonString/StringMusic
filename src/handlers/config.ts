@@ -2,7 +2,7 @@ import { convertFileSrc } from '@tauri-apps/api/core';
 import { join } from '@tauri-apps/api/path';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { Effect } from '@tauri-apps/api/window';
-import { exists, readDir } from '@tauri-apps/plugin-fs';
+import { exists, readDir, stat } from '@tauri-apps/plugin-fs';
 import bg from '../assets/bg.webp';
 import { WINDOW_LABEL } from '../constants/window';
 import type { AppConfig } from '../types/config';
@@ -21,7 +21,10 @@ export const applyConfigFnMap: {
   language(value) {
     setTimeout(async () => {
       await setLang(value);
-      document.body.style.display = '';
+      if (document.body.style.display) {
+        document.body.style.display = '';
+        console.info('Language loaded.');
+      }
     });
   },
 
@@ -43,18 +46,18 @@ export const applyConfigFnMap: {
     const style = document.body.style;
 
     const setBgColor = () => {
-      style.backgroundColor = `rgb(var(--mui-palette-AppBar-defaultBgChannel) / ${opacity}%)`;
       style.setProperty(
-        '--bg-color',
-        `rgb(var(--mui-palette-background-defaultChannel) / ${(opacity / 100) ** 5})`,
+        '--bg-overlay',
+        `rgb(var(--mui-palette-AppBar-defaultBgChannel) / ${opacity}%)`,
       );
-      appWindow.clearEffects();
+      style.setProperty('--bg-color', 'transparent');
+      setTimeout(() => appWindow.clearEffects());
     };
 
     const setEffects = (effects: Effect[]) => {
-      style.backgroundImage = '';
+      style.setProperty('--bg-image', 'transparent');
+      style.setProperty('--bg-overlay', 'transparent');
       style.removeProperty('--bg-color');
-      style.backgroundColor = 'transparent';
       appWindow.setEffects({
         effects,
       });
@@ -62,58 +65,90 @@ export const applyConfigFnMap: {
 
     switch (type) {
       case BackgroundType.Standard:
-        style.backgroundImage = '';
-        setBgColor();
+        style.removeProperty('--bg-image');
+        style.removeProperty('--bg-overlay');
+        style.removeProperty('--bg-color');
+        setTimeout(() => appWindow.clearEffects());
         break;
       case BackgroundType.Blur:
         setEffects([Effect.Blur, Effect.Sidebar]);
         break;
       case BackgroundType.Acrylic:
-        setEffects([Effect.Acrylic]);
+        setEffects([Effect.Acrylic, Effect.Blur]);
         break;
       case BackgroundType.Mica:
-        setEffects([Effect.Mica]);
+        setEffects([Effect.Mica, Effect.Acrylic, Effect.Blur]);
         break;
       case BackgroundType.RandomPictures:
-        setBgColor();
         if (!path) {
-          style.backgroundImage = `url(${bg})`;
+          style.setProperty('--bg-image', `url(${bg})`);
+          setBgColor();
           break;
         }
 
         try {
-          if (!(await exists(path))) {
-            style.backgroundImage = bg;
+          if (!((await exists(path)) && (await stat(path)).isDirectory)) {
+            style.setProperty('--bg-image', `url(${bg})`);
+            setBgColor();
             break;
           }
+
           const entries = await readDir(path);
           const files = entries
             .filter((entry) => entry.isFile)
             .map((file) => file.name);
           if (files.length === 0) {
-            style.backgroundImage = `url(${bg})`;
+            style.setProperty('--bg-image', `url(${bg})`);
             break;
           }
           const img = files[Math.floor(Math.random() * files.length)];
           const fullPath = await join(path, img);
-          style.backgroundImage = `url(${convertFileSrc(fullPath)}`;
+          style.setProperty('--bg-image', `url(${convertFileSrc(fullPath)}`);
         } catch (err) {
-          console.error('Failed to get random picture: ' + err);
-          style.backgroundImage = `url(${bg})`;
+          console.error('Failed to get random picture from folder: ' + err);
+          style.setProperty('--bg-image', `url(${bg})`);
         }
-        break;
-      default:
         setBgColor();
-        style.backgroundImage = `url(${path ? convertFileSrc(path) : bg})`;
+        break;
+
+      default:
+        if (!path) {
+          style.setProperty('--bg-image', `url(${bg})`);
+          setBgColor();
+          break;
+        }
+
+        try {
+          if ((await exists(path)) && (await stat(path)).isFile) {
+            style.setProperty(
+              '--bg-image',
+              `url(${path ? convertFileSrc(path) : bg})`,
+            );
+          } else {
+            style.setProperty('--bg-image', `url(${bg})`);
+          }
+        } catch (err) {
+          console.error('Failed to get picture: ' + err);
+          style.setProperty('--bg-image', `url(${bg})`);
+        }
+        setBgColor();
         break;
     }
   },
   async backgroundMiniWindow() {
     // [Effect.Blur, Effect.ContentBackground, Effect.Popover]
   },
-  advancedMaterial(val) {
-    if (val) document.body.classList.add('advanced-material');
-    else document.body.classList.remove('advanced-material');
+  advancedMaterial({ enabled, opacity }) {
+    if (enabled) {
+      document.body.classList.add('advanced-material');
+      document.body.style.setProperty(
+        '--advanced-material-opacity',
+        String(opacity / 100),
+      );
+    } else {
+      document.body.classList.remove('advanced-material');
+      document.body.style.removeProperty('--advanced-material-opacity');
+    }
   },
   sharpStyle(val) {
     if (val) document.body.classList.add('sharp-corner');

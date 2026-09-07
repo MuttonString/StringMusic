@@ -33,26 +33,28 @@ export default function Common({ refs }: RefsProp) {
   }, []);
 
   return (
-    <div className='flex flex-col gap-4 items-start'>
-      <Typography variant='h6' color='secondary' ref={addRef('common')}>
+    <div>
+      <Typography variant='h6' color='primary' ref={addRef('common')}>
         {t('config.common')}
       </Typography>
 
       {/* 该项不受程序配置文件控制 */}
-      <FormControlLabel
-        ref={addRef('autoStart')}
-        label={t('config.autoStart')}
-        control={
-          <Switch
-            checked={autoStart}
-            onChange={(_, val) => {
-              if (val) enable();
-              else disable();
-              setAutoStart(val);
-            }}
-          />
-        }
-      />
+      <div>
+        <FormControlLabel
+          ref={addRef('autoStart')}
+          label={t('config.autoStart')}
+          control={
+            <Switch
+              checked={autoStart}
+              onChange={(_, val) => {
+                if (val) enable();
+                else disable();
+                setAutoStart(val);
+              }}
+            />
+          }
+        />
+      </div>
 
       <LabelControlPair
         ref={addRef('language')}
@@ -60,7 +62,6 @@ export default function Common({ refs }: RefsProp) {
         control={
           <Button
             variant='outlined'
-            color='secondary'
             onClick={() => setLangOpen(true)}
             startIcon={<MaterialIcon name='openInNew' />}
           >
@@ -95,7 +96,7 @@ export default function Common({ refs }: RefsProp) {
         />
       )}
 
-      <div>
+      <div className='flex flex-col gap-2'>
         <FormControlLabel
           ref={addRef('autoCheckUpdate')}
           label={t('config.autoCheckUpdate')}
@@ -110,7 +111,6 @@ export default function Common({ refs }: RefsProp) {
           ref={addRef('checkUpdate')}
           fullWidth
           variant='outlined'
-          color='secondary'
           onClick={() => {
             //todo
           }}

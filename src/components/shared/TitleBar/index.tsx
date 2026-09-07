@@ -7,7 +7,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Popover from '@mui/material/Popover';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { type, version } from '@tauri-apps/plugin-os';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import { useNavigator } from '../../../providers/NavigatorProvider';
 import { KeyCode } from '../../../types/keyCode';
 import { showShortcutKey } from '../../../utils/shortcutKey';
 import { compareVersion } from '../../../utils/version';
+import { isRTL } from '../../../utils/window';
 import MaterialIcon from '../../ui/MaterialIcon';
 import Tip from '../../ui/Tip';
 import NavigatorList from '../NavigatorList';
@@ -110,6 +111,7 @@ export default function TitleBar() {
           <NavigatorList
             className='w-(--side-bar-width)!'
             onButtonClicked={() => setNavigatorOpen(false)}
+            noAnimation
           />
         </SwipeableDrawer>
         {!wide && (
@@ -126,16 +128,19 @@ export default function TitleBar() {
 
         <Tip
           disabled={!canGoBack}
-          title={showShortcutKey(t('titleBar.back'), KeyCode.Alt, KeyCode.Left)}
+          title={showShortcutKey(
+            t('titleBar.back'),
+            KeyCode.Alt,
+            isRTL() ? KeyCode.Right : KeyCode.Left,
+          )}
         >
           <IconButton
             aria-label={t('titleBar.back')}
             size='small'
-            className='rtl:-scale-x-100'
             disabled={!canGoBack}
             onClick={goBack}
           >
-            <MaterialIcon name='arrowBack' />
+            <MaterialIcon name={isRTL() ? 'arrowForward' : 'arrowBack'} />
           </IconButton>
         </Tip>
         <Tip
@@ -143,17 +148,16 @@ export default function TitleBar() {
           title={showShortcutKey(
             t('titleBar.forward'),
             KeyCode.Alt,
-            KeyCode.Right,
+            isRTL() ? KeyCode.Left : KeyCode.Right,
           )}
         >
           <IconButton
             aria-label={t('titleBar.forward')}
             size='small'
-            className='rtl:-scale-x-100'
             disabled={!canGoForward}
             onClick={goForward}
           >
-            <MaterialIcon name='arrowForward' />
+            <MaterialIcon name={isRTL() ? 'arrowBack' : 'arrowForward'} />
           </IconButton>
         </Tip>
 
@@ -239,7 +243,7 @@ export default function TitleBar() {
       </div>
       <div
         data-tauri-drag-region
-        className={classnames(
+        className={classNames(
           'flex',
           IS_DESKTOP && !IS_APPLE && 'me-[calc(3*var(--title-bar-btn-width))]',
         )}
@@ -269,7 +273,7 @@ export default function TitleBar() {
           >
             <button
               aria-label={t('titleBar.miniWindow')}
-              className={classnames(
+              className={classNames(
                 'decorum-tb-btn [&_svg]:align-middle',
                 isNewSegoeSupported && sharp
                   ? 'font-["Segoe_MDL2_Assets"]! text-base!'

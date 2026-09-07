@@ -2,12 +2,43 @@
   "common": {
     "stringMusic": "String 音乐",
     "noOptions": "无结果",
+    "clear": "清除",
     "imageFile": "图像文件",
     "allFile": "所有文件"
   },
   "msg": {
-    "webviewVersionWarning": "系统的 WebView 版本过低，可能造成界面错误。建议升级系统内置浏览器乃至操作系统。",
-    "devtoolFail": "打开开发人员工具失败"
+    "devOptionEnabled": "开发者选项已启用。",
+    "areYouSure": "确定要继续吗？",
+    "loadAudioFailed": "加载音频失败。",
+    "playAudioFailed": "播放音频失败。"
+  },
+  "menu": {
+    "desktopLyric": "桌面歌词",
+    "lockLyric": "锁定桌面歌词",
+    "show": "显示窗口",
+    "exit": "退出应用"
+  },
+  "media": {
+    "playPage": "点击进入播放页",
+    "enableCoverRotate": "长按启用旋转",
+    "disableCoverRotate": "长按禁用旋转",
+    "artist": "艺人",
+    "album": "专辑",
+    "prev": "上一首",
+    "next": "下一首",
+    "play": "播放",
+    "pause": "暂停",
+    "prev10Sec": "后退10秒",
+    "prevSentence": "上一句",
+    "next10Sec": "前进10秒",
+    "nextSentence": "下一句",
+    "moreOpt": "更多选项"
+  },
+  "titleBar": {
+    "navigator": "导航",
+    "back": "后退",
+    "forward": "前进",
+    "search": "搜索"
   },
   "footer": {
     "refresh": "刷新",
@@ -27,7 +58,7 @@
     "home": "主页",
     "recommendation": "推荐",
     "recent": "最近播放",
-    "artistCollection": "音乐人收藏",
+    "artistCollection": "艺人收藏",
     "albumCollection": "专辑收藏",
     "mvCollection": "MV 收藏",
     "songCollection": "喜爱的歌曲",
@@ -38,78 +69,97 @@
     "download": "下载",
     "settings": "设置"
   },
-  "settingsDrawer": {
+  "config": {
     "search": "搜索设置项",
-    "common": {
-      "title": "通用",
-      "autoStart": "开机自动启动",
-      "language": "语言"
-    },
-    "personalization": {
-      "title": "个性化",
-      "colorMode": {
-        "title": "颜色模式",
-        "followSystem": "跟随系统",
-        "light": "亮",
-        "dark": "暗"
-      },
-      "primaryColor": "主题色",
-      "background": {
-        "title": "主窗口背景",
-        "type": {
-          "title": "背景类型",
-          "default": "默认",
-          "translucent": "半透明",
-          "blur": "模糊",
-          "picture": "单张图片",
-          "folder": "随机图片"
-        },
-        "opacity": "不透明度",
-        "blurEffect": {
-          "title": "模糊效果",
-          "blur": "模糊",
-          "acrylic": "亚克力",
-          "mica": "云母"
-        },
-        "picture": "图片",
-        "selectPicture": "选择图片",
-        "folder": "文件夹",
-        "selectFolder": "选择文件夹"
-      },
-      "backgroundMini": {
-        "title": "小窗背景"
-      },
-      "advancedMaterial": "高级材质",
-      "disableRoundCorner": "禁用圆角"
-    },
-    "about": {
-      "title": "关于",
-      "unknown": "未知",
-      "author": "作者",
-      "openSourceLib": "开源代码库",
-      "clickToView": "点击查看",
-      "appVer": "应用程序版本",
-      "tauriVer": "Tauri 版本",
-      "webviewVer": "WebView 版本",
-      "os": "操作系统",
-      "locale": "系统语言"
-    },
-    "developerOptions": {
-      "title": "开发者选项",
-      "enabled": "开启",
-      "forceRTL": "强制从右到左布局",
-      "showFooter": "显示页脚",
-      "script": "启动后 JS 脚本",
-      "warning": "请确保脚本内容可信，以避免被攻击者注入恶意代码！",
-      "openAppdata": "打开应用数据目录",
-      "openLog": "打开应用日志目录",
-      "throwError": "抛出应用程序异常",
-      "crash": "使应用程序崩溃"
-    }
+    "common": "常规",
+    "autoStart": "开机后自启动",
+    "language": "语言",
+    "closeWindowAction": "关闭窗口时的行为",
+    "ask": "每次询问",
+    "minimize": "最小化到托盘",
+    "exit": "退出应用",
+    "autoCheckUpdate": "自动检查更新",
+    "checkUpdate": "检查更新",
+
+    "windowAppearance": "窗口外观",
+    "colorMode": "颜色模式",
+    "followSystem": "跟随系统",
+    "light": "亮",
+    "dark": "暗",
+    "primaryColor": "主题色",
+    "backgroundMainWindow": "主窗口背景",
+    "standard": "标准",
+    "blur": "模糊",
+    "acrylic": "亚克力",
+    "mica": "云母",
+    "singlePicture": "单张图片",
+    "randomPictures": "随机图片",
+    "opacity": "不透明度",
+    "selectPicture": "选择图片",
+    "selectFolder": "选择文件夹",
+    "backgroundMiniWindow": "小窗背景",
+    "useCover": "使用音乐封面",
+    "globalFont": "全局字体",
+    "searchFont": "搜索字体",
+    "searchFontDesc": "留空以使用默认值。",
+    "advancedMaterial": "高级材质",
+    "sharpStyle": "锐利风格",
+    "animationDuration": "动画时长",
+
+    "about": "关于",
+    "unknown": "未知",
+    "author": "作者",
+    "openSourceLib": "开源代码库",
+    "clickToView": "点击查看",
+    "appVer": "应用版本",
+    "frameworkVer": "框架版本",
+    "webviewVer": "WebView 版本",
+    "osInfo": "操作系统",
+    "locale": "系统区域",
+
+    "devOptions": "开发者选项",
+    "enableDevOptions": "启用开发者选项",
+    "forceRTL": "强制从右到左布局",
+    "showFooter": "显示页脚",
+    "script": "脚本",
+    "scriptWarning": "不要将不受信任的代码粘贴在此。",
+    "openAppdata": "打开应用数据目录",
+    "openLog": "打开日志目录",
+    "throwError": "抛出异常",
+    "crash": "制造崩溃"
+  },
+  "color": {
+    "red": "红色",
+    "orange": "橙色",
+    "amber": "琥珀色",
+    "yellow": "黄色",
+    "lime": "青柠色",
+    "green": "绿色",
+    "emerald": "翠绿色",
+    "teal": "蓝绿色",
+    "cyan": "青色",
+    "sky": "天蓝色",
+    "blue": "蓝色",
+    "indigo": "靛蓝色",
+    "violet": "紫罗兰色",
+    "purple": "紫色",
+    "fuchsia": "紫红色",
+    "pink": "粉色",
+    "rose": "玫瑰色",
+    "slate": "石板灰",
+    "gray": "灰色",
+    "zinc": "锌灰色",
+    "neutral": "中性灰",
+    "stone": "岩石色",
+    "taupe": "灰褐色",
+    "mauve": "淡紫色",
+    "mist": "雾灰色",
+    "olive": "橄榄色"
   },
   "dialog": {
     "cancel": "取消",
-    "confirm": "确认"
+    "confirm": "确认",
+    "close": "关闭"
   },
   "langDialog": {
     "title": "语言管理",
@@ -123,28 +173,10 @@
     "author": "作者",
     "desc": "描述"
   },
-  "colorDialog": {
-    "title": "选取颜色",
-    "new": "新的",
-    "current": "当前",
-    "preview": "预览",
-    "r": "红色",
-    "g": "绿色",
-    "b": "蓝色",
-    "h": "色相",
-    "s": "饱和度",
-    "v": "明度",
-    "hex": "十六进制"
-  },
-  "colorRing": {
-    "custom": "自定义颜色",
-    "red": "红色",
-    "orange": "橙色",
-    "yellow": "黄色",
-    "lime": "青柠色",
-    "green": "绿色",
-    "cyan": "青色",
-    "blue": "蓝色",
-    "purple": "紫色"
+  "closeWindowDialog": {
+    "title": "关闭窗口",
+    "minimize": "最小化到托盘",
+    "exit": "退出应用",
+    "neverAsk": "下次不再询问"
   }
 }

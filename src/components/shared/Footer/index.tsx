@@ -3,11 +3,12 @@ import InputBase from '@mui/material/InputBase';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { invoke } from '@tauri-apps/api/core';
-import type { RefObject } from 'react';
+import { motion } from 'framer-motion';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 import FiltersSvg from '../../../assets/filters.svg?react';
+import { VERTICAL } from '../../../constants/animation';
 import { PRIMARY_MODIFIER_KEY } from '../../../constants/keys';
 import { IS_DESKTOP } from '../../../constants/os';
 import { useNavigator } from '../../../providers/NavigatorProvider';
@@ -33,11 +34,7 @@ interface __XMLHttpRequest extends XMLHttpRequest {
   __url: string | URL;
 }
 
-interface Props {
-  ref?: RefObject<HTMLElement>;
-}
-
-export default function Footer({ ref }: Props) {
+export default function Footer() {
   const location = useLocation();
   const [input, setInput] = useState('');
   const { goTo } = useNavigator();
@@ -205,9 +202,13 @@ export default function Footer({ ref }: Props) {
   );
 
   return (
-    <footer
-      ref={ref}
-      className='w-full bg-(--bg-color) border-t border-divider flex ps-1 pe-1'
+    <motion.footer
+      className='w-full bg-(--bg-color) overlay-1 border-t border-divider flex ps-2! pe-2!'
+      variants={VERTICAL}
+      custom='2rem'
+      initial='hidden'
+      whileInView='visible'
+      exit='hidden'
     >
       <InputBase
         fullWidth
@@ -307,6 +308,6 @@ export default function Footer({ ref }: Props) {
           </IconButton>
         </Tip>
       )}
-    </footer>
+    </motion.footer>
   );
 }

@@ -15,16 +15,10 @@ export function isRTL() {
 }
 
 /**
- * 应用是否是深色模式
- */
-export function isDarkMode() {
-  return window.matchMedia('(prefers-color-scheme:dark)').matches;
-}
-
-/**
  * 销毁所有窗口，退出应用
  */
 export async function destroyAll() {
+  console.info('Destroy all windows.');
   if (!IS_APPLE) await MAIN_WINDOW.setFullscreen(false);
   const windows = await getAllWebviewWindows();
   windows.forEach((win) => win.destroy());
@@ -34,6 +28,7 @@ export async function destroyAll() {
  * 展示主窗口
  */
 export async function showMainWindow() {
+  console.info('Show main window.');
   await MAIN_WINDOW.show();
   await MAIN_WINDOW.unminimize();
   await MAIN_WINDOW.setFocus();
@@ -44,6 +39,7 @@ export async function showMainWindow() {
  * 展示程序当前窗口
  */
 export async function raise() {
+  console.info('Raise window.');
   const miniWindow = await WebviewWindow.getByLabel('mini');
   if (await miniWindow?.isVisible()) {
     await miniWindow!.setFocus();

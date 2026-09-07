@@ -15,8 +15,11 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MAIN_WINDOW, WINDOW_LABEL } from '../constants/window';
-import useThrottle from '../hooks/useThrottle';
+import {
+  DEFAULT_WINDOW_ICON,
+  MAIN_WINDOW,
+  WINDOW_LABEL,
+} from '../constants/window';
 import {
   TaskbarButtons,
   type AudioContext,
@@ -33,23 +36,29 @@ import { useSnackbar } from './SnackbarProvider';
 
 const isWindows = type() === 'windows';
 
-if ('mediaSession' in navigator) {
-  navigator.mediaSession.setActionHandler('play', () =>
-    emit(BackendEvent.Play),
-  );
-  navigator.mediaSession.setActionHandler('pause', () =>
-    emit(BackendEvent.Pause),
-  );
-  navigator.mediaSession.setActionHandler('seekbackward', (e) =>
-    emit(BackendEvent.SeekBackward, e.seekOffset),
-  );
-  navigator.mediaSession.setActionHandler('seekforward', (e) =>
-    emit(BackendEvent.SeekForward, e.seekOffset),
-  );
-} else {
-  invoke('detach_media_control')
-    .catch(() => {})
-    .finally(() => invoke('init_media_control'));
+if (WINDOW_LABEL === 'main') {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', () =>
+      emit(BackendEvent.Play),
+    );
+    navigator.mediaSession.setActionHandler('pause', () =>
+      emit(BackendEvent.Pause),
+    );
+    navigator.mediaSession.setActionHandler('seekbackward', (e) =>
+      emit(BackendEvent.SeekBackward, e.seekOffset),
+    );
+    navigator.mediaSession.setActionHandler('seekforward', (e) =>
+      emit(BackendEvent.SeekForward, e.seekOffset),
+    );
+  } else {
+    console.warn('Do not support mediaSession.');
+    invoke('detach_media_control')
+      .catch(() => {})
+      .finally(() => {
+        console.info('Initialize media control.');
+        invoke('init_media_control');
+      });
+  }
 }
 
 const initVal: AudioContext = {
@@ -83,6 +92,7 @@ export function AudioProvider({ children }: ChildrenProp) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const fakeAudioRef = useRef<HTMLAudioElement>(null);
   const randomIdxListRef = useRef<number[]>([]);
+  const errRecord = useRef(new Set<string>());
 
   const [currIdx, setCurrIdx] = useState(-1);
   const [prevIdx, setPrevIdx] = useState(-1);
@@ -92,6 +102,7 @@ export function AudioProvider({ children }: ChildrenProp) {
   const [pending, setPending] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [lyric, setLyric] = useState<LyricSentence[]>([]);
+  const [currArrayBuffer, setCurrArrayBuffer] = useState<ArrayBuffer>();
 
   // 不依赖其他状态的状态更改
   useEffect(() => {
@@ -105,7 +116,9 @@ export function AudioProvider({ children }: ChildrenProp) {
       listen(BackendEvent.Pause, () => {
         setPaused(true);
         if (audioRef.current) {
+          console.info('Pause audio.');
           audioRef.current.pause();
+          fakeAudioRef.current!.pause();
           if ('mediaSession' in navigator) {
             navigator.mediaSession.playbackState = 'paused';
           }
@@ -131,15 +144,20 @@ export function AudioProvider({ children }: ChildrenProp) {
         setPaused(true);
         setCurrentTime(0);
         if (audioRef.current) {
+          console.info('Stop audio.');
+          audioRef.current.pause();
+          fakeAudioRef.current!.pause();
           audioRef.current.currentTime = 0;
+          fakeAudioRef.current!.currentTime = 0;
         }
       }),
     );
 
     unlisten.push(
       listen<number>(BackendEvent.SetPosition, (e) => {
-        setCurrentTime(e.payload);
+        setCurrentTime(Math.floor(e.payload));
         if (audioRef.current) {
+          console.info(`Set audio position to ${e.payload}s.`);
           audioRef.current.currentTime = e.payload;
         }
       }),
@@ -194,11 +212,14 @@ export function AudioProvider({ children }: ChildrenProp) {
     return () => unlisten.forEach((item) => item.then((fn) => fn()));
   }, []);
 
+  const currSong = playQueue[currIdx] as Song | undefined;
+
   // 播放
   useEffect(() => {
     const unlisten = listen(BackendEvent.Play, () => {
       setPaused(false);
       if (audioRef.current && !pending) {
+        console.info('Play audio.');
         audioRef.current.play().catch((err) => {
           console.error('Failed to play audio: ' + err);
           showSnackbar(t('msg.playAudioFailed') + '\n' + err, 'error');
@@ -268,6 +289,8 @@ export function AudioProvider({ children }: ChildrenProp) {
       listen(BackendEvent.Next, () => {
         setCurrentTime(0);
         if (audioRef.current) {
+          console.info('Next song.');
+          audioRef.current.pause();
           audioRef.current.currentTime = 0;
         }
         if (canChangeTrack) {
@@ -280,6 +303,8 @@ export function AudioProvider({ children }: ChildrenProp) {
       listen(BackendEvent.Previous, () => {
         setCurrentTime(0);
         if (audioRef.current) {
+          console.info('Previous song.');
+          audioRef.current.pause();
           audioRef.current.currentTime = 0;
         }
         if (canChangeTrack) {
@@ -292,6 +317,8 @@ export function AudioProvider({ children }: ChildrenProp) {
       listen<number>(BackendEvent.SetCurrIdx, (e) => {
         setCurrentTime(0);
         if (audioRef.current) {
+          console.info(`Set current song index to ${e.payload}.`);
+          audioRef.current.pause();
           audioRef.current.currentTime = 0;
         }
         setCurrIdx(e.payload);
@@ -315,11 +342,13 @@ export function AudioProvider({ children }: ChildrenProp) {
         let position: number;
 
         if (duration === undefined) {
+          console.info(`Seek forward ${duration}s.`);
           position =
             lyric[
               lyric.findIndex((item) => item.start <= audio.currentTime) + 1
             ].start - config.replayDelay;
         } else {
+          console.info('Seek forward one sentence.');
           position = audio.currentTime - duration;
         }
 
@@ -337,10 +366,12 @@ export function AudioProvider({ children }: ChildrenProp) {
         let position: number;
 
         if (duration === undefined) {
+          console.info(`Seek backward ${duration}s.`);
           position =
             (lyric.find((item) => item.start > audio.currentTime)?.start ||
               Infinity) - config.replayDelay;
         } else {
+          console.info('Seek backward one sentence.');
           position = audio.currentTime + duration;
         }
 
@@ -442,12 +473,14 @@ export function AudioProvider({ children }: ChildrenProp) {
           }, idx),
         );
 
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+
         setCurrentTime(0);
         setCurrIdx(currIdx + 1);
         setPaused(false);
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-        }
         return newArr;
       });
     });
@@ -457,13 +490,12 @@ export function AudioProvider({ children }: ChildrenProp) {
     };
   }, [currIdx]);
 
-  const currSong = playQueue[currIdx] as Song | undefined;
-
   // 初始化Windows任务栏缩略图控件
   useEffect(() => {
     if (!isWindows || WINDOW_LABEL !== 'main') return;
 
     const unlisten = listen(BackendEvent.ShowMainWindow, async () => {
+      console.info('Initialize thumbnail buttons.');
       await invoke('init_thumbnail_buttons');
       invoke('update_buttons', {
         updates: [
@@ -494,26 +526,31 @@ export function AudioProvider({ children }: ChildrenProp) {
 
   // 将元数据显示到系统控件
   useEffect(() => {
+    if (WINDOW_LABEL !== 'main') return;
+
     if ('mediaSession' in navigator) {
+      console.info('Update mediaSession.');
       navigator.mediaSession.metadata = currSong
         ? new MediaMetadata({
             title: currSong.title,
-            artist: currSong.artists?.map((item) => item.label).join(', '),
+            artist: currSong.artists?.map((item) => item.label).join('; '),
             album: currSong.album?.label,
             artwork: currSong.cover ? [{ src: currSong.cover }] : undefined,
           })
         : null;
     } else if (currSong) {
+      console.info('Attach media control.');
       invoke('set_metadata', {
         metadata: {
           title: currSong.title,
-          artist: currSong.artists?.map((item) => item.label).join(', ') || '',
+          artist: currSong.artists?.map((item) => item.label).join('; ') || '',
           album: currSong.album?.label || '',
           cover: currSong.cover || '',
           duration: currSong.duration || 0,
         },
       }).then(() => invoke('attach_media_control'));
     } else {
+      console.info('Detach media control.');
       invoke('detach_media_control');
     }
 
@@ -594,47 +631,70 @@ export function AudioProvider({ children }: ChildrenProp) {
           MAIN_WINDOW.setIcon((await defaultWindowIcon())!);
         });
     } else {
-      defaultWindowIcon().then((val) => MAIN_WINDOW.setIcon(val!));
+      MAIN_WINDOW.setIcon(DEFAULT_WINDOW_ICON);
     }
   }, [config.useCoverAsIcon, currSong?.cover]);
-
-  // 将audio的播放进度与react状态同步
-  const onTimeUpdate = useThrottle(
-    (e?: SyntheticEvent<HTMLAudioElement, Event>) => {
-      if (e?.currentTarget) {
-        emit(BackendEvent.TimeUpdate, e.currentTarget.currentTime);
-      }
-    },
-    1000,
-  );
 
   // 设置当前歌曲，使用双audio元素避免src变化时系统媒体控件短暂消失
   useEffect(() => {
     if (!audioRef.current) return;
 
-    fakeAudioRef.current!.src = currSong?.src || '';
+    if (currSong?.src) {
+      fakeAudioRef.current!.src = currSong?.src;
+    } else {
+      fakeAudioRef.current!.removeAttribute('src');
+    }
+
     audioRef.current.pause();
+    fakeAudioRef.current!.pause();
+
     [audioRef.current, fakeAudioRef.current] = [
       fakeAudioRef.current,
       audioRef.current,
     ];
+
+    setCurrArrayBuffer(undefined);
+    if (currSong?.src) {
+      const getArrayBuffer = async () => {
+        try {
+          const resp = await fetch(currSong.src);
+          const buffer = await resp.arrayBuffer();
+          if (audioRef.current?.getAttribute('src') === currSong.src) {
+            setCurrArrayBuffer(buffer);
+          }
+        } catch (err) {
+          console.error('Failed to get array buffer: ' + err);
+        }
+      };
+      getArrayBuffer();
+    }
   }, [currSong?.src]);
+
+  const onTimeUpdate = (e: SyntheticEvent<HTMLAudioElement, Event>) => {
+    const int = Math.floor(e.currentTarget.currentTime);
+    if (currentTime !== int) {
+      emit(BackendEvent.TimeUpdate, int);
+    }
+  };
 
   const audioProps = useMemo<ComponentProps<'audio'> | undefined>(
     () =>
       WINDOW_LABEL === 'main'
         ? {
             preload: 'auto',
-            onLoadStart: () => emit(BackendEvent.IsLoading, true),
+            onLoadStart: () => {
+              emit(BackendEvent.IsLoading, true);
+              console.info('Loading audio started.');
+            },
             onCanPlay: (e) => {
-              if (!pending) return;
-              emit(BackendEvent.IsLoading, false);
-              if (!paused) {
+              if (!paused && e.currentTarget === audioRef.current) {
                 e.currentTarget.play();
                 if ('mediaSession' in navigator) {
                   navigator.mediaSession.playbackState = 'playing';
                 }
               }
+              emit(BackendEvent.IsLoading, false);
+              console.info('Audio can be played.');
             },
             onError: (e) => {
               const error = e.currentTarget.error;
@@ -644,34 +704,50 @@ export function AudioProvider({ children }: ChildrenProp) {
                 showSnackbar(t('msg.loadAudioFailed') + '\n' + errStr, 'error');
               }
               emit(BackendEvent.IsLoading, false);
+
+              const src = e.currentTarget.src;
+              setTimeout(() => {
+                if (canChangeTrack && !errRecord.current.has(src)) {
+                  emit(BackendEvent.Next);
+                  errRecord.current.add(src);
+                } else {
+                  emit(BackendEvent.Stop);
+                }
+              }, 1000);
             },
-            onTimeUpdate,
-            onEnded: () => {
+            onEnded: (e) => {
               switch (config.playbackMode) {
                 case PlaybackMode.NoRepeat:
                   emit(BackendEvent.Stop);
                   break;
                 case PlaybackMode.RepeatOne:
+                  e.currentTarget.play();
                   emit(BackendEvent.SetPosition, { position: 0 });
                   break;
                 default:
+                  e.currentTarget.play();
                   emit(BackendEvent.Next);
                   break;
               }
             },
             onLoadedMetadata: (e) => {
               const newQueue = [...playQueue];
-              playQueue[currIdx].duration = e.currentTarget.duration;
-              emit<Song[]>(BackendEvent.UpdateQueue, newQueue);
+              const curr = newQueue.find(
+                (item) => e.currentTarget.getAttribute('src') === item.src,
+              );
+              if (curr) {
+                playQueue[currIdx].duration = e.currentTarget.duration;
+                emit<Song[]>(BackendEvent.UpdateQueue, newQueue);
+                console.info('Duration data loaded.');
+              }
             },
           }
         : undefined,
     [
+      canChangeTrack,
       config.playbackMode,
       currIdx,
-      onTimeUpdate,
       paused,
-      pending,
       playQueue,
       showSnackbar,
       t,
@@ -690,14 +766,19 @@ export function AudioProvider({ children }: ChildrenProp) {
         pending,
         currentTime,
         lyric,
+        currArrayBuffer,
         setLyric,
       }}
     >
       {children}
       {WINDOW_LABEL === 'main' && (
         <>
-          <audio ref={audioRef} {...audioProps} />
-          <audio ref={fakeAudioRef} {...audioProps} />
+          <audio ref={audioRef} onTimeUpdate={onTimeUpdate} {...audioProps} />
+          <audio
+            ref={fakeAudioRef}
+            onTimeUpdate={onTimeUpdate}
+            {...audioProps}
+          />
         </>
       )}
     </Context.Provider>

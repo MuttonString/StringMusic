@@ -21,8 +21,9 @@ export default function MainContent() {
   }, [lastOperation]);
 
   return (
+    // MD_WIDTH
     <main
-      className={`bg-(--bg-color) flex-1 min-h-0 min-w-0 flex overflow-clip border-s border-t border-divider rounded-ss-lg max-[50rem]:border-s-0 max-[50rem]:rounded-ss-none`}
+      className={`bg-(--bg-color) overlay-1 flex-1 min-h-0 min-w-0 flex overflow-clip border-s border-t border-divider rounded-ss-lg max-[50rem]:border-s-0 max-[50rem]:rounded-ss-none`}
     >
       <AnimatePresence>
         <motion.div

@@ -72,7 +72,6 @@ export default function CloseWindowHandler() {
       <div className='flex flex-col items-start'>
         <Button
           className='justify-start!'
-          color='secondary'
           fullWidth
           size='large'
           onClick={() => {
@@ -87,7 +86,6 @@ export default function CloseWindowHandler() {
         </Button>
         <Button
           className='justify-start!'
-          color='secondary'
           fullWidth
           size='large'
           onClick={() => {

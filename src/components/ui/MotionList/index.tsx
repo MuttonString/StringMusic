@@ -6,10 +6,15 @@ import { useConfig } from '../../../providers/ConfigProvider';
 
 const MotionLi = motion.create(List);
 
+interface Props extends ComponentProps<typeof MotionLi> {
+  initialAnimation?: boolean;
+}
+
 export default function MotionList({
   children,
+  initialAnimation,
   ...props
-}: ComponentProps<typeof MotionLi>) {
+}: Props) {
   const [config] = useConfig();
 
   return (
@@ -21,7 +26,7 @@ export default function MotionList({
       exit='hidden'
       {...props}
     >
-      <AnimatePresence mode='popLayout'>
+      <AnimatePresence mode='popLayout' initial={initialAnimation}>
         {children as ReactNode}
       </AnimatePresence>
     </MotionLi>

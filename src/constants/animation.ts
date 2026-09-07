@@ -10,7 +10,7 @@ export const BASE_COMPONENT: Variants = {
     opacity: 1,
     minWidth: w,
     maxWidth: w,
-    paddingInlineStart: ps || 0,
+    paddingInlineStart: ps,
   }),
   hidden: {
     opacity: 0,
@@ -28,6 +28,7 @@ export const VERTICAL: Variants = {
   hidden: {
     opacity: 0,
     maxHeight: 0,
+    padding: 0,
   },
 };
 
@@ -37,17 +38,17 @@ export const PAGE: Variants = {
     x: 0,
     y: 0,
   },
-  goBack: {
+  goBack: () => ({
     opacity: 0,
-    x: isRTL() ? '-2rem' : '2rem',
-  },
-  goForward: {
+    x: isRTL() ? '-4rem' : '4rem',
+  }),
+  goForward: () => ({
     opacity: 0,
-    x: isRTL() ? '2rem' : '-2rem',
-  },
+    x: isRTL() ? '4rem' : '-4rem',
+  }),
   new: {
     opacity: 0,
-    y: '1rem',
+    y: '2rem',
   },
 };
 
@@ -55,7 +56,7 @@ export const LIST: Variants = {
   visible: (durationScale: number) => ({
     transition: {
       when: 'beforeChildren',
-      staggerChildren: (durationScale * DEFAULT_DURATION) / 4,
+      staggerChildren: (durationScale * DEFAULT_DURATION) / 8,
     },
   }),
 };
@@ -65,8 +66,8 @@ export const LIST_ITEM: Variants = {
     opacity: 1,
     x: 0,
   },
-  hidden: {
+  hidden: () => ({
     opacity: 0,
     x: isRTL() ? '5rem' : '-5rem',
-  },
+  }),
 };

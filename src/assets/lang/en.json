@@ -2,12 +2,43 @@
   "common": {
     "stringMusic": "String Music",
     "noOptions": "No results",
+    "clear": "Clear",
     "imageFile": "Image files",
     "allFile": "All files"
   },
   "msg": {
-    "webviewVersionWarning": "The WebView version of your system is too low, which may cause interface errors. It is recommended to update the built-in browser of your system as well as your operating system.",
-    "devtoolFail": "Failed to open DevTools"
+    "devOptionEnabled": "Developer options have been enabled.",
+    "areYouSure": "Are you sure to continue?",
+    "loadAudioFailed": "Failed to load this audio.",
+    "playAudioFailed": "Failed to play this audio."
+  },
+  "menu": {
+    "desktopLyric": "Desktop lyric",
+    "lockLyric": "Lock desktop lyric",
+    "show": "Show window",
+    "exit": "Exit application"
+  },
+  "media": {
+    "playPage": "Click to enter the play page",
+    "enableCoverRotate": "Long press to enable rotation",
+    "disableCoverRotate": "Long press to disable rotation",
+    "artist": "Artist",
+    "album": "Album",
+    "prev": "Previous song",
+    "next": "Next song",
+    "play": "Play",
+    "pause": "Pause",
+    "prev10Sec": "Back 10 seconds",
+    "prevSentence": "Previous sentence",
+    "next10Sec": "Forward 10 seconds",
+    "nextSentence": "Next sentence",
+    "moreOpt": "More options"
+  },
+  "titleBar": {
+    "navigator": "Navigator",
+    "back": "Back",
+    "forward": "Forward",
+    "search": "Search"
   },
   "footer": {
     "refresh": "Refresh",
@@ -38,78 +69,97 @@
     "download": "Downloads",
     "settings": "Settings"
   },
-  "settingsDrawer": {
-    "search": "Search settings item",
-    "common": {
-      "title": "Common",
-      "autoStart": "Auto-start on boot",
-      "language": "Language"
-    },
-    "personalization": {
-      "title": "Personalization",
-      "colorMode": {
-        "title": "Color mode",
-        "followSystem": "Follow system",
-        "light": "Light",
-        "dark": "Dark"
-      },
-      "primaryColor": "Primary color",
-      "background": {
-        "title": "Main window background",
-        "type": {
-          "title": "Background type",
-          "default": "Default",
-          "translucent": "Translucent",
-          "blur": "Blur",
-          "picture": "Single picture",
-          "folder": "Random pictures"
-        },
-        "opacity": "Opacity",
-        "blurEffect": {
-          "title": "Blur effect",
-          "blur": "Blur",
-          "acrylic": "Acrylic",
-          "mica": "Mica"
-        },
-        "picture": "Picture",
-        "selectPicture": "Select picture",
-        "folder": "Folder",
-        "selectFolder": "Select folder"
-      },
-      "backgroundMini": {
-        "title": "Mini window background"
-      },
-      "advancedMaterial": "Advanced material",
-      "disableRoundCorner": "Disable round corner"
-    },
-    "about": {
-      "title": "About",
-      "unknown": "Unknown",
-      "author": "Author",
-      "openSourceLib": "Open source libraries",
-      "clickToView": "Click to view",
-      "appVer": "Application version",
-      "tauriVer": "Tauri version",
-      "webviewVer": "WebView version",
-      "os": "Operating system",
-      "locale": "System language"
-    },
-    "developerOptions": {
-      "title": "Developer options",
-      "enabled": "Enabled",
-      "forceRTL": "Force RTL layout",
-      "showFooter": "Show footer",
-      "script": "Start-up JS script",
-      "warning": "Please ensure that the script content is reliable to prevent attackers from injecting malicious code!",
-      "openAppdata": "Open app data directory",
-      "openLog": "Open app log directory",
-      "throwError": "Throw application error",
-      "crash": "Cause application to crash"
-    }
+  "config": {
+    "search": "Search settings items",
+    "common": "Common",
+    "autoStart": "Start automatically on boot",
+    "language": "Language",
+    "closeWindowAction": "Behavior when closing the window",
+    "ask": "Ask every time",
+    "minimize": "Minimize to tray",
+    "exit": "Exit application",
+    "autoCheckUpdate": "Automatically check for updates",
+    "checkUpdate": "Check for updates",
+
+    "windowAppearance": "Window appearance",
+    "colorMode": "Color mode",
+    "followSystem": "Follow system",
+    "light": "Light",
+    "dark": "Dark",
+    "primaryColor": "Primary color",
+    "backgroundMainWindow": "Main window background",
+    "standard": "Standard",
+    "blur": "Blur",
+    "acrylic": "Acrylic",
+    "mica": "Mica",
+    "singlePicture": "Single picture",
+    "randomPictures": "Random pictures",
+    "opacity": "Opacity",
+    "selectPicture": "Select picture",
+    "selectFolder": "Select folder",
+    "backgroundMiniWindow": "Mini window background",
+    "useCover": "Use music cover",
+    "globalFont": "Global font",
+    "searchFont": "Search font",
+    "searchFontDesc": "Leave blank to use the default value.",
+    "advancedMaterial": "Advanced material",
+    "sharpStyle": "Sharp style",
+    "animationDuration": "Animation duration",
+
+    "about": "About",
+    "unknown": "Unknown",
+    "author": "Author",
+    "openSourceLib": "Open source libraries",
+    "clickToView": "Click to view",
+    "appVer": "Application version",
+    "frameworkVer": "Framework version",
+    "webviewVer": "WebView version",
+    "osInfo": "Operating system",
+    "locale": "System locale",
+
+    "devOptions": "Developer options",
+    "enableDevOptions": "Enable developer options",
+    "forceRTL": "Force RTL layout",
+    "showFooter": "Show footer",
+    "script": "Script",
+    "scriptWarning": "Do not paste untrusted code here.",
+    "openAppdata": "Open app data directory",
+    "openLog": "Open log directory",
+    "throwError": "Throw an error",
+    "crash": "Create a crash"
+  },
+  "color": {
+    "red": "Red",
+    "orange": "Orange",
+    "amber": "Amber",
+    "yellow": "Yellow",
+    "lime": "Lime",
+    "green": "Green",
+    "emerald": "Emerald",
+    "teal": "Teal",
+    "cyan": "Cyan",
+    "sky": "Sky",
+    "blue": "Blue",
+    "indigo": "Indigo",
+    "violet": "Violet",
+    "purple": "Purple",
+    "fuchsia": "Fuchsia",
+    "pink": "Pink",
+    "rose": "Rose",
+    "slate": "Slate",
+    "gray": "Gray",
+    "zinc": "Zinc",
+    "neutral": "Neutral",
+    "stone": "Stone",
+    "taupe": "Taupe",
+    "mauve": "Mauve",
+    "mist": "Mist",
+    "olive": "Olive"
   },
   "dialog": {
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "close": "Close"
   },
   "langDialog": {
     "title": "Language management",
@@ -123,29 +173,10 @@
     "author": "Author",
     "desc": "Description"
   },
-  "colorDialog": {
-    "title": "Choose color",
-    "new": "New",
-    "current": "Current",
-    "preview": "Preview",
-    "r": "Red",
-    "g": "Green",
-    "b": "Blue",
-    "h": "Hue",
-    "s": "Saturation",
-    "v": "Value",
-    "hex": "Hex"
-  },
-  "colorRing": {
-    "custom": "Custom color",
-    "red": "Red",
-    "orange": "Orange",
-    "yellow": "Yellow",
-    "lime": "Lime",
-    "green": "Green",
-    "cyan": "Cyan",
-    "blue": "Blue",
-    "purple": "Purple",
-    "pink": "Pink"
+  "closeWindowDialog": {
+    "title": "Close window",
+    "minimize": "Minimize to tray",
+    "exit": "Exit application",
+    "neverAsk": "Do not ask again next time"
   }
 }

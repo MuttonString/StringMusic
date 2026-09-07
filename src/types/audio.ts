@@ -1,6 +1,15 @@
 import type { ReactNode } from 'react';
 
-export interface AudioContext extends AudioState {
+export interface AudioContext {
+  currIdx: number; // 无正在播放的歌曲时为-1
+  prevIdx: number;
+  nextIdx: number;
+  playQueue: Song[];
+  paused: boolean;
+  pending: boolean;
+  currentTime: number;
+  lyric: LyricSentence[];
+  currArrayBuffer?: ArrayBuffer;
   play: () => void;
   pause: () => void;
   prev: () => void;
@@ -30,26 +39,19 @@ export interface Song {
   api?: string; // 仅在线歌曲
   src: string;
   title: string;
+  translation?: string;
   artists?: DetailMetadata[];
   album?: DetailMetadata;
   cover?: string;
   duration?: number;
+  marks?: number[];
 }
 
 export interface LyricSentence {
   start: number;
-  text: ReactNode;
-  pron?: string;
+  text: string;
+  furigana?: ReactNode;
+  pronounciation?: string;
+  translation?: string;
   words?: { start: number; text: string }[];
-}
-
-export interface AudioState {
-  currIdx: number; // 无正在播放的歌曲时为-1
-  prevIdx: number;
-  nextIdx: number;
-  playQueue: Song[];
-  paused: boolean;
-  pending: boolean;
-  currentTime: number;
-  lyric: LyricSentence[];
 }

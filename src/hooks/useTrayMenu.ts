@@ -1,16 +1,32 @@
-import { defaultWindowIcon } from '@tauri-apps/api/app';
 import { emit } from '@tauri-apps/api/event';
 import { Menu } from '@tauri-apps/api/menu';
 import type { TrayIconEvent } from '@tauri-apps/api/tray';
 import { TrayIcon } from '@tauri-apps/api/tray';
-import { useEffect, useRef } from 'react';
+import { createRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IS_APPLE, IS_DESKTOP } from '../constants/os';
+import { DEFAULT_WINDOW_ICON } from '../constants/window';
 import { useAudio } from '../providers/AudioProvider';
 import { BackendEvent } from '../types/backend';
 import { destroyAll, raise } from '../utils/window';
 
-await TrayIcon.removeById('StringMusic').catch(() => {});
+const menuRef = createRef<Menu>();
+const actionRef = createRef<(event: TrayIconEvent) => void>();
+
+try {
+  await TrayIcon.removeById('StringMusic');
+} catch {}
+const tray =
+  !IS_DESKTOP || IS_APPLE
+    ? null
+    : await TrayIcon.new({
+        id: 'StringMusic',
+        icon: DEFAULT_WINDOW_ICON,
+        showMenuOnLeftClick: false,
+        action: (e) => actionRef.current?.(e),
+      });
+
+if (tray) console.info('Tray icon created.');
 
 /**
  * 创建托盘图标
@@ -18,40 +34,18 @@ await TrayIcon.removeById('StringMusic').catch(() => {});
 export default function useTrayMenu() {
   const { t } = useTranslation();
   const media = useAudio();
-  const trayRef = useRef<TrayIcon>(undefined);
-  const menuRef = useRef<Menu>(undefined);
-  const actionRef = useRef<(event: TrayIconEvent) => void>(undefined);
 
   useEffect(() => {
-    if (!IS_DESKTOP || IS_APPLE) return;
+    if (!tray) return;
 
-    const create = async () => {
-      trayRef.current = await TrayIcon.new({
-        id: 'StringMusic',
-        title: t('common.stringMusic'),
-        tooltip: t('common.stringMusic'),
-        icon: (await defaultWindowIcon())!,
-        showMenuOnLeftClick: false,
-        menu: menuRef.current,
-        action: (e) => actionRef.current?.(e),
-      });
-    };
-
-    TrayIcon.getById('StringMusic')
-      .then(async (val) => {
-        if (val) {
-          val.setTitle(t('common.stringMusic'));
-          val.setTooltip(t('common.stringMusic'));
-          val.setMenu(menuRef.current || null);
-          trayRef.current = val;
-        } else {
-          create();
-        }
-      })
-      .catch(create);
+    tray.setTitle(t('common.stringMusic'));
+    tray.setTooltip(t('common.stringMusic'));
+    tray.setMenu(menuRef.current || null);
   }, [t]);
 
   useEffect(() => {
+    if (!tray) return;
+
     Menu.new({
       items: [
         {
@@ -94,7 +88,7 @@ export default function useTrayMenu() {
       ],
     }).then((val) => {
       menuRef.current = val;
-      trayRef.current?.setMenu(val);
+      tray.setMenu(val);
     });
 
     actionRef.current = (e) => {

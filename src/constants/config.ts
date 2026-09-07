@@ -31,10 +31,15 @@ export const CONFIG_ID_LIST = [
   // playbackPageBackground
   // dynamicWaveType
   // coverBounce
+  // showPronounciation
+  // showTranslation
+  // showPlayQueue
 
   'enableDesktopLyric',
   'lockDesktopLyric',
   'lyricFont',
+  'multiline',
+  'lyricAlign',
   'longitudinal',
   'textStroke',
   'textShadow',
@@ -57,6 +62,7 @@ export const CONFIG_ID_LIST = [
   'replaceWholeList',
   'replayDelay',
   'volume',
+  'mute',
   'dynamicVolume',
   'canVolumnOver100',
   'speed',

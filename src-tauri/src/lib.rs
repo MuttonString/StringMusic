@@ -82,15 +82,13 @@ pub fn run() {
                 .targets([
                     Target::new(TargetKind::Stdout),
                     Target::new(TargetKind::Webview),
-                    Target::new(TargetKind::LogDir {
-                        file_name: Some(chrono::Local::now().format("%Y-%m-%d").to_string()),
-                    }),
+                    Target::new(TargetKind::LogDir { file_name: None }),
                 ])
                 .level(log::LevelFilter::Info)
                 .format(|out, message, record| {
                     out.finish(format_args!(
                         "[{}][{}] {}",
-                        chrono::Local::now().format("%H:%M:%S%.3f"),
+                        chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.3f"),
                         record.level(),
                         message
                     ))

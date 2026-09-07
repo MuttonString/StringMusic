@@ -1,7 +1,8 @@
+import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { default as classnames } from 'classnames';
+import classNames from 'classnames';
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,12 +16,17 @@ import MotionList from '../../ui/MotionList';
 
 interface Props {
   onButtonClicked?: () => void;
+  noAnimation?: boolean;
   className?: string;
 }
 
 const MotionLiBtn = motion.create(ListItemButton);
 
-export default function NavigatorList({ onButtonClicked, className }: Props) {
+export default function NavigatorList({
+  onButtonClicked,
+  className,
+  noAnimation,
+}: Props) {
   const [config] = useConfig();
   const openDrawer = useConfigDrawer();
   const [selected, setSelected] = useState('');
@@ -29,6 +35,12 @@ export default function NavigatorList({ onButtonClicked, className }: Props) {
   const { t } = useTranslation();
   const { goTo } = useNavigator();
   const [disabled, setDisabled] = useState<string[]>([]);
+
+  const Li = useMemo(() => (noAnimation ? List : MotionList), [noAnimation]);
+  const Btn = useMemo(
+    () => (noAnimation ? ListItemButton : MotionLiBtn),
+    [noAnimation],
+  );
 
   const items = useMemo(
     () => [
@@ -98,43 +110,47 @@ export default function NavigatorList({ onButtonClicked, className }: Props) {
 
   return (
     <div
-      className={classnames(
+      className={classNames(
         'flex flex-col justify-between w-full h-full',
         className,
       )}
     >
-      <MotionList className='[body:not(.sharp-corner)_&]:ml-2! [body:not(.sharp-corner)_&]:mr-2!'>
+      <Li className='[body:not(.sharp-corner)_&]:ml-2! [body:not(.sharp-corner)_&]:mr-2!'>
         {items
           .filter((item) => !disabled.includes(item.id))
           .map((item) => (
-            <MotionLiBtn
-              className='[body:not(.sharp-corner)_&]:pl-2! [body:not(.sharp-corner)_&]:pr-2!'
-              layout
-              variants={LIST_ITEM}
+            <Btn
+              className='[body:not(.sharp-corner)_&]:ps-2! [body:not(.sharp-corner)_&]:pe-2!'
+              layout={noAnimation ? undefined : true}
+              variants={noAnimation ? undefined : LIST_ITEM}
               key={item.id}
               selected={selected === item.id}
               onClick={() => {
+                if (selected === item.id) return;
                 setSelected(item.id);
                 goTo('/' + item.id);
                 onButtonClicked?.();
               }}
             >
               <ListItemIcon
-                className={classnames(
+                className={classNames(
                   selected === item.id && 'text-secondary!',
                 )}
               >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText primary={item.label} />
-            </MotionLiBtn>
+              <ListItemText
+                className={classNames(selected === item.id && '**:font-bold!')}
+                primary={item.label}
+              />
+            </Btn>
           ))}
-      </MotionList>
+      </Li>
 
       <MotionList className='[body:not(.sharp-corner)_&]:ml-2! [body:not(.sharp-corner)_&]:mr-2!'>
         <MotionLiBtn
           key={0}
-          className='[body:not(.sharp-corner)_&]:pl-2! [body:not(.sharp-corner)_&]:pr-2!'
+          className='[body:not(.sharp-corner)_&]:ps-2! [body:not(.sharp-corner)_&]:pe-2!'
           variants={LIST_ITEM}
           onClick={() => {
             onButtonClicked?.();
@@ -148,7 +164,7 @@ export default function NavigatorList({ onButtonClicked, className }: Props) {
 
         <MotionLiBtn
           key={1}
-          className='[body:not(.sharp-corner)_&]:pl-2! [body:not(.sharp-corner)_&]:pr-2!'
+          className='[body:not(.sharp-corner)_&]:ps-2! [body:not(.sharp-corner)_&]:pe-2!'
           variants={LIST_ITEM}
           onClick={() => {
             openDrawer();

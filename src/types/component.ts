@@ -1,4 +1,5 @@
 import type { ReactNode, RefObject } from 'react';
+import type { CONFIG_GROUP_ID_LIST } from '../constants/config';
 
 export interface ChildrenProp {
   children: ReactNode;
@@ -21,4 +22,6 @@ export type OpenSnackbarFn = (
   autoHideDuration?: number,
 ) => void;
 
-export type OpenConfigDrawerFn = (jumpTo?: string) => void;
+export type OpenConfigDrawerFn = (
+  jumpTo?: (typeof CONFIG_GROUP_ID_LIST)[number],
+) => void;

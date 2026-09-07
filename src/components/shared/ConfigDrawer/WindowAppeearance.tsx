@@ -6,20 +6,16 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
 import Switch from '@mui/material/Switch';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { basename, pictureDir } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VERTICAL } from '../../../constants/animation';
-import {
-  COLOR_LABEL_MAP,
-  DARK_SECONDARY_COLOR_SHADE,
-  DEFAULT_COLOR_SHADE,
-  LIGHT_SECONDARY_COLOR_SHADE,
-  SORTED_COLOR_ENTRIES,
-} from '../../../constants/colors';
+import { COLOR_LABEL_MAP, COLOR_VALUE_MAP } from '../../../constants/colors';
 import { IMAGE_FILE_FILTER } from '../../../constants/file';
 import { IS_DESKTOP } from '../../../constants/os';
 import {
@@ -29,19 +25,11 @@ import {
 } from '../../../constants/window';
 import { useConfig } from '../../../providers/ConfigProvider';
 import type { RefsProp } from '../../../types/component';
-import type { Colors } from '../../../types/config';
-import { BackgroundType, ColorMode } from '../../../types/config';
-import { isDarkMode } from '../../../utils/window';
+import { BackgroundType, ColorMode, Colors } from '../../../types/config';
 import FontSelect from '../../ui/FontSelect';
 import LabelControlPair from '../../ui/LabelControlPair';
 import MaterialIcon from '../../ui/MaterialIcon';
 import Tip from '../../ui/Tip';
-
-const showOpacity = [
-  BackgroundType.Standard,
-  BackgroundType.SinglePicture,
-  BackgroundType.RandomPictures,
-];
 
 const showPicture = [
   BackgroundType.SinglePicture,
@@ -81,6 +69,10 @@ export default function WindowAppeance({ refs }: RefsProp) {
   const [opacityMini, setOpacityMini] = useState(bgMiniOpacity);
   useEffect(() => setOpacityMini(bgMiniOpacity), [bgMiniOpacity]);
 
+  const materialOpacity = config.advancedMaterial.opacity;
+  const [opacityMaterial, setOpacityMaterial] = useState(materialOpacity);
+  useEffect(() => setOpacityMaterial(materialOpacity), [materialOpacity]);
+
   const bgPath = config.backgroundMainWindow.path;
   const [path, setPath] = useState('');
   const [name, setName] = useState('');
@@ -90,7 +82,7 @@ export default function WindowAppeance({ refs }: RefsProp) {
     if (bgPath) {
       basename(bgPath)
         .then((val) => setName(val))
-        .catch((err) => console.log('Failed to get basename: ' + err));
+        .catch((err) => console.error('Failed to get basename: ' + err));
     } else {
       setName('');
     }
@@ -118,9 +110,7 @@ export default function WindowAppeance({ refs }: RefsProp) {
       }
 
       const newPath = await open({
-        title: t(
-          `settingsDrawer.personalization.background.${directory ? 'selectFolder' : 'selectPicture'}`,
-        ),
+        title: t(directory ? 'config.selectFolder' : 'config.selectPicture'),
         defaultPath,
         filters: [
           {
@@ -156,13 +146,15 @@ export default function WindowAppeance({ refs }: RefsProp) {
     [config.backgroundMainWindow, path, t, updateConfig],
   );
 
+  const colors = useMemo(() => {
+    const entries = Object.entries(COLOR_LABEL_MAP);
+    entries.splice(Colors.Slate, 0, ['', 'slate']); // 空白占位
+    return entries;
+  }, []);
+
   return (
-    <div className='flex flex-col gap-4 items-start'>
-      <Typography
-        variant='h6'
-        color='secondary'
-        ref={addRef('windowAppearance')}
-      >
+    <div>
+      <Typography variant='h6' color='primary' ref={addRef('windowAppearance')}>
         {t('config.windowAppearance')}
       </Typography>
 
@@ -170,16 +162,30 @@ export default function WindowAppeance({ refs }: RefsProp) {
         label={t('config.colorMode')}
         ref={addRef('colorMode')}
         control={
-          <Select
+          <ToggleButtonGroup
+            fullWidth
+            color='primary'
+            size='small'
+            exclusive
             value={config.colorMode}
-            onChange={(e) => updateConfig({ colorMode: e.target.value })}
+            onChange={(_, val) => updateConfig({ colorMode: val })}
           >
-            <MenuItem value={ColorMode.FollowSystem}>
-              {t('config.followSystem')}
-            </MenuItem>
-            <MenuItem value={ColorMode.Light}>{t('config.light')}</MenuItem>
-            <MenuItem value={ColorMode.Dark}>{t('config.dark')}</MenuItem>
-          </Select>
+            <Tip title={t('config.light')}>
+              <ToggleButton value={ColorMode.Light}>
+                <MaterialIcon name='lightMode' />
+              </ToggleButton>
+            </Tip>
+            <Tip title={t('config.followSystem')}>
+              <ToggleButton value={ColorMode.FollowSystem}>
+                <MaterialIcon name='settingsBrightness' />
+              </ToggleButton>
+            </Tip>
+            <Tip title={t('config.dark')}>
+              <ToggleButton value={ColorMode.Dark}>
+                <MaterialIcon name='darkMode' />
+              </ToggleButton>
+            </Tip>
+          </ToggleButtonGroup>
         }
       />
 
@@ -187,22 +193,19 @@ export default function WindowAppeance({ refs }: RefsProp) {
         ref={addRef('primaryColor')}
         label={t('config.primaryColor')}
         control={
-          <div className='grid grid-cols-7 gap-1 grid-rows-3 aspect-7/3'>
-            {SORTED_COLOR_ENTRIES.map(([key, value]) => {
+          <div className='grid grid-cols-9 grid-rows-3 aspect-9/3 gap-0.5'>
+            {colors.map(([key, value]) => {
+              if (!key) return <div key={key} />;
+
               const colorId: Colors = Number(key);
               return (
-                <Tip key={key} title={t('color.' + COLOR_LABEL_MAP[colorId])}>
+                <Tip key={key} title={t('color.' + value)}>
                   <Button
                     color='inherit'
-                    className='min-w-0! p-0! border-2!'
+                    variant='outlined'
+                    className='min-w-0! p-0! border-2! border-divider! hover:border-text-primary! forced-color-adjust-none'
                     style={{
-                      background: value[DEFAULT_COLOR_SHADE],
-                      borderColor:
-                        value[
-                          isDarkMode()
-                            ? DARK_SECONDARY_COLOR_SHADE
-                            : LIGHT_SECONDARY_COLOR_SHADE
-                        ],
+                      background: COLOR_VALUE_MAP[colorId].main,
                     }}
                     onClick={() => {
                       if (config.primaryColor === colorId) return;
@@ -220,7 +223,7 @@ export default function WindowAppeance({ refs }: RefsProp) {
         }
       />
 
-      <div className='w-full'>
+      <div className='flex flex-col'>
         <LabelControlPair
           ref={addRef('backgroundMainWindow')}
           label={t('config.backgroundMainWindow')}
@@ -232,7 +235,6 @@ export default function WindowAppeance({ refs }: RefsProp) {
                 updateConfig({
                   backgroundMainWindow: {
                     ...config.backgroundMainWindow,
-                    path: '',
                     type: e.target.value,
                   },
                 })
@@ -268,26 +270,28 @@ export default function WindowAppeance({ refs }: RefsProp) {
           }
         />
 
-        <AnimatePresence>
-          {showOpacity.includes(config.backgroundMainWindow.type) && (
+        <AnimatePresence initial={false}>
+          {[
+            BackgroundType.SinglePicture,
+            BackgroundType.RandomPictures,
+          ].includes(config.backgroundMainWindow.type) && (
             <motion.div
-              className='flex gap-4 me-6'
+              className='flex gap-4 me-6 items-center pt-2'
               layout
               variants={VERTICAL}
-              custom='30px'
+              custom='38px'
               initial='hidden'
               animate='visible'
               exit='hidden'
             >
-              {t('config.opacity')}
+              <span>{t('config.opacity')}</span>
               <Slider
                 value={opacityMain}
                 onChange={(_, val) => {
                   const style = document.body.style;
-                  style.backgroundColor = `rgb(var(--mui-palette-AppBar-defaultBgChannel) / ${val}%)`;
                   style.setProperty(
-                    '--bg-color',
-                    `rgb(var(--mui-palette-background-defaultChannel) / ${(val / 100) ** 5})`,
+                    '--bg-overlay',
+                    `rgb(var(--mui-palette-AppBar-defaultBgChannel) / ${val}%)`,
                   );
                   setOpacityMain(val);
                 }}
@@ -305,15 +309,16 @@ export default function WindowAppeance({ refs }: RefsProp) {
           )}
         </AnimatePresence>
 
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {showPicture.includes(config.backgroundMainWindow.type) && (
             <motion.div
               variants={VERTICAL}
               layout
-              custom='60px'
+              custom='68px'
               initial='hidden'
               animate='visible'
               exit='hidden'
+              className='pt-2'
             >
               <ButtonGroup fullWidth>
                 <Button
@@ -328,7 +333,6 @@ export default function WindowAppeance({ refs }: RefsProp) {
                     />
                   }
                   variant='outlined'
-                  color='secondary'
                   onClick={() =>
                     selectPicture(
                       config.backgroundMainWindow.type ===
@@ -347,7 +351,6 @@ export default function WindowAppeance({ refs }: RefsProp) {
                   <Button
                     sx={{ width: '2rem' }}
                     variant='outlined'
-                    color='secondary'
                     onClick={() =>
                       updateConfig({
                         backgroundMainWindow: {
@@ -362,7 +365,7 @@ export default function WindowAppeance({ refs }: RefsProp) {
                 </Tip>
               </ButtonGroup>
               <Tip title={path} disabled={!path}>
-                <FormHelperText>
+                <FormHelperText className='truncate'>
                   {name || t('config.defaultPictureName')}
                 </FormHelperText>
               </Tip>
@@ -371,7 +374,7 @@ export default function WindowAppeance({ refs }: RefsProp) {
         </AnimatePresence>
       </div>
 
-      <div className='w-full'>
+      <div>
         <LabelControlPair
           label={t('config.backgroundMiniWindow')}
           ref={addRef('backgroundMiniWindow')}
@@ -413,18 +416,20 @@ export default function WindowAppeance({ refs }: RefsProp) {
           }
         />
 
-        <AnimatePresence>
-          {showOpacity.includes(config.backgroundMiniWindow.type) && (
+        <AnimatePresence initial={false}>
+          {[BackgroundType.Standard, BackgroundType.SinglePicture].includes(
+            config.backgroundMiniWindow.type,
+          ) && (
             <motion.div
-              className='flex gap-4 me-6'
+              className='flex gap-4 me-6 items-center pt-2'
               layout
               variants={VERTICAL}
-              custom='30px'
+              custom='38px'
               initial='hidden'
               animate='visible'
               exit='hidden'
             >
-              {t('config.opacity')}
+              <span>{t('config.opacity')}</span>
               <Slider
                 value={opacityMini}
                 onChange={(_, val) => {
@@ -457,27 +462,73 @@ export default function WindowAppeance({ refs }: RefsProp) {
         }
       />
 
-      <FormControlLabel
-        ref={addRef('advancedMaterial')}
-        label={t('config.advancedMaterial')}
-        control={
-          <Switch
-            checked={config.advancedMaterial}
-            onChange={(_, val) => updateConfig({ advancedMaterial: val })}
-          />
-        }
-      />
+      <div>
+        <FormControlLabel
+          ref={addRef('advancedMaterial')}
+          label={t('config.advancedMaterial')}
+          control={
+            <Switch
+              checked={config.advancedMaterial.enabled}
+              onChange={(_, val) =>
+                updateConfig({
+                  advancedMaterial: {
+                    ...config.advancedMaterial,
+                    enabled: val,
+                  },
+                })
+              }
+            />
+          }
+        />
 
-      <FormControlLabel
-        ref={addRef('sharpStyle')}
-        label={t('config.sharpStyle')}
-        control={
-          <Switch
-            checked={config.sharpStyle}
-            onChange={(_, val) => updateConfig({ sharpStyle: val })}
-          />
-        }
-      />
+        <AnimatePresence initial={false}>
+          {config.advancedMaterial.enabled && (
+            <motion.div
+              className='flex gap-4 me-6 items-center pt-2'
+              layout
+              variants={VERTICAL}
+              custom='38px'
+              initial='hidden'
+              animate='visible'
+              exit='hidden'
+            >
+              <span>{t('config.opacity')}</span>
+              <Slider
+                value={opacityMaterial}
+                onChange={(_, val) => {
+                  document.body.style.setProperty(
+                    '--advanced-material-opacity',
+                    String(val / 100),
+                  );
+                  setOpacityMaterial(val);
+                }}
+                onChangeCommitted={(_, val) =>
+                  updateConfig({
+                    advancedMaterial: {
+                      ...config.advancedMaterial,
+                      opacity: val,
+                    },
+                  })
+                }
+                valueLabelDisplay='auto'
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div>
+        <FormControlLabel
+          ref={addRef('sharpStyle')}
+          label={t('config.sharpStyle')}
+          control={
+            <Switch
+              checked={config.sharpStyle}
+              onChange={(_, val) => updateConfig({ sharpStyle: val })}
+            />
+          }
+        />
+      </div>
 
       <LabelControlPair
         ref={addRef('animationDuration')}

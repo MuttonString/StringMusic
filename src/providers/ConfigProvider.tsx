@@ -1,6 +1,12 @@
 import { emit, listen } from '@tauri-apps/api/event';
 import { load } from '@tauri-apps/plugin-store';
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import { WINDOW_LABEL } from '../constants/window';
 import { applyConfigFnMap } from '../handlers/config';
 import type { EventPayload } from '../types/backend';
@@ -13,6 +19,7 @@ import {
   ColorMode,
   Colors,
   CyrillicToLatinMode,
+  LyricAlign,
   PlaybackMode,
   RomajiMode,
   ShowAudioWave,
@@ -60,13 +67,18 @@ const initVal: AppConfig = {
     opacity: 80,
   },
   globalFont: '',
-  advancedMaterial: true,
+  advancedMaterial: {
+    enabled: true,
+    opacity: 60,
+  },
   sharpStyle: false,
   animationDuration: 1,
 
   enableDesktopLyric: false,
   lockDesktopLyric: false,
   lyricFont: '',
+  multiline: false,
+  lyricAlign: LyricAlign.InlineStart,
   longitudinal: false,
   textStroke: false,
   textShadow: true,
@@ -91,6 +103,7 @@ const initVal: AppConfig = {
   replaceWholeList: false,
   replayDelay: 2,
   volume: 100,
+  mute: false,
   dynamicVolume: false,
   canVolumnOver100: false,
   speed: 1,
@@ -126,6 +139,7 @@ export const useConfig = () => useContext(Context);
 
 export function ConfigProvider({ children }: ChildrenProp) {
   const [config, dispatch] = useReducer(reducer, initVal);
+  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     const unlisten = listen<EventPayload<Partial<AppConfig>>>(
@@ -150,7 +164,10 @@ export function ConfigProvider({ children }: ChildrenProp) {
         });
       }
     };
-    loadConfig();
+    loadConfig().then(() => {
+      console.info('Config loaded.');
+      setFinished(true);
+    });
 
     return () => {
       unlisten.then((fn) => fn());
@@ -159,7 +176,7 @@ export function ConfigProvider({ children }: ChildrenProp) {
 
   return (
     <Context.Provider value={[config, emitChanging]}>
-      {children}
+      {finished && children}
     </Context.Provider>
   );
 }
